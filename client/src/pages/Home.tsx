@@ -183,7 +183,13 @@ export default function Home() {
         {selectedNode && (
           <ProfileCard 
             node={selectedNode} 
-            onClose={() => setSelectedNode(null)} 
+            onClose={() => setSelectedNode(null)}
+            graphData={graphData}
+            onNodeSelect={(node) => {
+              setSelectedNode(node);
+              setFocusNodeId(node.id);
+              setTimeout(() => setFocusNodeId(null), 100);
+            }}
           />
         )}
       </AnimatePresence>

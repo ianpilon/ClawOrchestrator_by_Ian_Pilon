@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { NodeData } from '@/lib/mockData';
-import { Github, Linkedin, Twitter, Globe, X, Scan, Database, MapPin, Fingerprint, Sparkles, Route, Zap } from 'lucide-react';
+import { Github, Linkedin, Twitter, Globe, X, Scan, Database, MapPin, Fingerprint, Sparkles, Route, Zap, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -9,14 +9,33 @@ import { Separator } from '@/components/ui/separator';
 interface ProfileCardProps {
   node: NodeData | null;
   onClose: () => void;
+  graphData?: { nodes: NodeData[]; links: { source: string; target: string }[] };
+  onNodeSelect?: (node: NodeData) => void;
 }
 
 type TabType = 'overview' | 'journey' | 'signals';
 
-export function ProfileCard({ node, onClose }: ProfileCardProps) {
+export function ProfileCard({ node, onClose, graphData, onNodeSelect }: ProfileCardProps) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
   if (!node) return null;
+
+  // Find connected nodes
+  const connections: NodeData[] = [];
+  if (graphData) {
+    const connectedIds = new Set<string>();
+    graphData.links.forEach(link => {
+      const sourceId = typeof link.source === 'object' ? (link.source as any).id : link.source;
+      const targetId = typeof link.target === 'object' ? (link.target as any).id : link.target;
+      if (sourceId === node.id) connectedIds.add(targetId);
+      if (targetId === node.id) connectedIds.add(sourceId);
+    });
+    graphData.nodes.forEach(n => {
+      if (connectedIds.has(n.id) && n.id !== node.id) {
+        connections.push(n);
+      }
+    });
+  }
 
   return (
     <motion.div
@@ -86,7 +105,7 @@ export function ProfileCard({ node, onClose }: ProfileCardProps) {
         
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
-          {activeTab === 'overview' && <OverviewTab node={node} />}
+          {activeTab === 'overview' && <OverviewTab node={node} connections={connections} onNodeSelect={onNodeSelect} />}
           {activeTab === 'journey' && <JourneyTab node={node} />}
           {activeTab === 'signals' && <SignalsTab node={node} />}
         </div>
@@ -117,7 +136,7 @@ function TabButton({ active, onClick, icon, label }: { active: boolean; onClick:
   );
 }
 
-function OverviewTab({ node }: { node: NodeData }) {
+function OverviewTab({ node, connections, onNodeSelect }: { node: NodeData; connections?: NodeData[]; onNodeSelect?: (node: NodeData) => void }) {
   return (
     <div className="p-6 space-y-6">
       {/* Key Metrics */}
@@ -135,6 +154,40 @@ function OverviewTab({ node }: { node: NodeData }) {
             </div>
          </div>
       </div>
+
+      {/* Connections */}
+      {connections && connections.length > 0 && (
+        <>
+          <Separator className="bg-white/5" />
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <Users className="w-3 h-3" /> Network ({connections.length})
+            </h3>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {connections.slice(0, 5).map((conn) => (
+                <button
+                  key={conn.id}
+                  onClick={() => onNodeSelect?.(conn)}
+                  className="w-full flex items-center gap-3 p-2 bg-white/[0.02] border border-white/5 hover:border-primary/30 hover:bg-primary/5 transition-colors text-left"
+                  data-testid={`connection-${conn.id}`}
+                >
+                  <img src={conn.img} alt={conn.name} className="w-8 h-8 rounded-full object-cover border border-white/10" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-medium text-foreground truncate">{conn.name}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">{conn.role} • {conn.location}</div>
+                  </div>
+                  {conn.exceptional && <div className="w-2 h-2 bg-secondary flex-shrink-0" />}
+                </button>
+              ))}
+              {connections.length > 5 && (
+                <div className="text-[10px] text-muted-foreground text-center py-1">
+                  +{connections.length - 5} more connections
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       <Separator className="bg-white/5" />
 
