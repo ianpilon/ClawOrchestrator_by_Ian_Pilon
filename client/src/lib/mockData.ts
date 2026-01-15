@@ -47,16 +47,20 @@ const journeyNarratives = [
   "Balanced extraordinary professional output with a demanding personal life, demonstrating time management and execution abilities that set them apart from typical high performers.",
 ];
 
-// Define organizations with relative weights/masses (xAI is largest)
-const locations = [
-  { name: 'xAI', weight: 0.25 }, 
-  { name: 'OpenAI', weight: 0.18 },     
-  { name: 'Anthropic', weight: 0.15 },        
-  { name: 'Meta', weight: 0.12 },     
-  { name: 'Google (DeepMind)', weight: 0.12 },       
-  { name: 'Google Gemini', weight: 0.10 },
-  { name: 'Nvidia', weight: 0.08 },       
+// Define organizations with exact node counts
+const organizations = [
+  { name: 'Google (DeepMind)', count: 6000 },
+  { name: 'OpenAI', count: 5000 },     
+  { name: 'Meta', count: 5000 },        
+  { name: 'Microsoft', count: 4000 },     
+  { name: 'Nvidia', count: 3000 },       
+  { name: 'Anthropic', count: 2300 },
+  { name: 'xAI', count: 1200 },
+  { name: 'Amazon', count: 1000 },       
 ];
+
+// Keep locations for backward compatibility (maps to organization name)
+const locations = organizations;
 
 function randomItem<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -66,16 +70,8 @@ function randomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getRandomLocation() {
-  const rand = Math.random();
-  let cumulativeWeight = 0;
-  for (const loc of locations) {
-    cumulativeWeight += loc.weight;
-    if (rand < cumulativeWeight) {
-      return loc.name;
-    }
-  }
-  return locations[0].name; // Fallback
+function getRandomOrganization() {
+  return randomItem(organizations).name;
 }
 
 export interface JourneyMilestone {
@@ -176,96 +172,99 @@ function createFeaturedNode(profile: { name: string; location: string; role: str
   };
 }
 
-export function generateGraphData(count: number = 1000) {
+export function generateGraphData() {
   const nodes: NodeData[] = [];
   const links: { source: string; target: string }[] = [];
+  let nodeIndex = 0;
 
   // Add featured profiles first
   featuredProfiles.forEach((profile, idx) => {
     nodes.push(createFeaturedNode(profile, idx));
+    nodeIndex++;
   });
 
-  // Generate remaining random nodes
-  const remainingCount = count - featuredProfiles.length;
-  for (let i = 0; i < remainingCount; i++) {
-    const nodeIndex = i + featuredProfiles.length; // Offset index for unique IDs
-    const isExceptional = Math.random() > 0.85; // Top 15%
-    const fn = randomItem(firstNames);
-    const ln = randomItem(lastNames);
-    const location = getRandomLocation();
-    
-    // Assign a cluster group ID based on location index
-    const locationIdx = locations.findIndex(l => l.name === location);
+  // Generate nodes for each organization with exact counts
+  organizations.forEach((org, orgIndex) => {
+    // Subtract featured profiles that belong to this org
+    const featuredInOrg = featuredProfiles.filter(p => p.location === org.name).length;
+    const nodesToGenerate = org.count - featuredInOrg;
 
-    // Generate journey data
-    const numMilestones = isExceptional ? randomInt(4, 7) : randomInt(1, 3);
-    const shuffledMilestones = [...milestoneTemplates].sort(() => Math.random() - 0.5);
-    const selectedMilestones = shuffledMilestones.slice(0, numMilestones).sort((a, b) => a.year - b.year);
-    
-    const numTraits = isExceptional ? randomInt(3, 5) : randomInt(1, 2);
-    const shuffledTraits = [...exceptionalTraits].sort(() => Math.random() - 0.5);
-    const selectedTraits = shuffledTraits.slice(0, numTraits);
+    for (let i = 0; i < nodesToGenerate; i++) {
+      const isExceptional = Math.random() > 0.85; // Top 15%
+      const fn = randomItem(firstNames);
+      const ln = randomItem(lastNames);
 
-    nodes.push({
-      id: `u${nodeIndex}`,
-      name: `${fn} ${ln}`,
-      role: randomItem(roles),
-      company: randomItem(companies),
-      img: randomItem(avatars),
-      exceptional: isExceptional,
-      skills: Array.from({ length: randomInt(3, 6) }, () => randomItem(skillsList)),
-      psychographic: {
-        openness: randomInt(60, 100),
-        conscientiousness: randomInt(50, 100),
-        extraversion: randomInt(20, 90),
-        agreeableness: randomInt(40, 90),
-        neuroticism: randomInt(10, 60),
-        innovationScore: isExceptional ? randomInt(90, 100) : randomInt(50, 90),
-        leadershipPotential: randomInt(10, 100),
-      },
-      social: {
-        github: `github.com/${fn.toLowerCase()}${ln.toLowerCase()}`,
-        linkedin: `linkedin.com/in/${fn.toLowerCase()}-${ln.toLowerCase()}`,
-        twitter: `@${fn.toLowerCase()}_tech`,
-        website: `${fn.toLowerCase()}.dev`,
-      },
-      yearsExperience: randomInt(1, 15),
-      location: location,
-      clusterGroup: locationIdx,
-      journey: {
-        milestones: selectedMilestones as JourneyMilestone[],
-        narrative: isExceptional ? randomItem(journeyNarratives) : "Shows steady progression with consistent performance across core competencies.",
-        exceptionalTraits: selectedTraits,
-      },
-    });
-  }
+      // Generate journey data
+      const numMilestones = isExceptional ? randomInt(4, 7) : randomInt(1, 3);
+      const shuffledMilestones = [...milestoneTemplates].sort(() => Math.random() - 0.5);
+      const selectedMilestones = shuffledMilestones.slice(0, numMilestones).sort((a, b) => a.year - b.year);
+      
+      const numTraits = isExceptional ? randomInt(3, 5) : randomInt(1, 2);
+      const shuffledTraits = [...exceptionalTraits].sort(() => Math.random() - 0.5);
+      const selectedTraits = shuffledTraits.slice(0, numTraits);
 
-  // 2. Generate Links (Prefer intra-cluster connections)
-  // We'll iterate through nodes and connect them
+      nodes.push({
+        id: `u${nodeIndex}`,
+        name: `${fn} ${ln}`,
+        role: randomItem(roles),
+        company: org.name,
+        img: randomItem(avatars),
+        exceptional: isExceptional,
+        skills: Array.from({ length: randomInt(3, 6) }, () => randomItem(skillsList)),
+        psychographic: {
+          openness: randomInt(60, 100),
+          conscientiousness: randomInt(50, 100),
+          extraversion: randomInt(20, 90),
+          agreeableness: randomInt(40, 90),
+          neuroticism: randomInt(10, 60),
+          innovationScore: isExceptional ? randomInt(90, 100) : randomInt(50, 90),
+          leadershipPotential: randomInt(10, 100),
+        },
+        social: {
+          github: `github.com/${fn.toLowerCase()}${ln.toLowerCase()}`,
+          linkedin: `linkedin.com/in/${fn.toLowerCase()}-${ln.toLowerCase()}`,
+          twitter: `@${fn.toLowerCase()}_tech`,
+          website: `${fn.toLowerCase()}.dev`,
+        },
+        yearsExperience: randomInt(1, 15),
+        location: org.name,
+        clusterGroup: orgIndex,
+        journey: {
+          milestones: selectedMilestones as JourneyMilestone[],
+          narrative: isExceptional ? randomItem(journeyNarratives) : "Shows steady progression with consistent performance across core competencies.",
+          exceptionalTraits: selectedTraits,
+        },
+      });
+      nodeIndex++;
+    }
+  });
+
+  // Build index of nodes by organization for faster link generation
+  const nodesByOrg: Record<string, number[]> = {};
+  nodes.forEach((node, idx) => {
+    if (!nodesByOrg[node.location]) nodesByOrg[node.location] = [];
+    nodesByOrg[node.location].push(idx);
+  });
+
+  // Generate Links (Prefer intra-cluster connections)
   nodes.forEach((node, i) => {
-    // Determine how many connections this node has
-    // Exceptional nodes might have more connections
-    const numLinks = node.exceptional ? randomInt(3, 8) : randomInt(1, 4);
+    // Fewer links per node to reduce clutter with large dataset
+    const numLinks = node.exceptional ? randomInt(2, 4) : randomInt(1, 2);
+    const orgNodes = nodesByOrg[node.location] || [];
 
     for (let j = 0; j < numLinks; j++) {
       let targetIndex;
-      const stayInCluster = Math.random() > 0.05; // 95% chance to stay in cluster (increased from 85%)
+      const stayInCluster = Math.random() > 0.05;
 
-      if (stayInCluster) {
-        // Find a random node in the same location
-        let attempts = 0;
-        do {
-           targetIndex = randomInt(0, nodes.length - 1);
-           attempts++;
-        } while (nodes[targetIndex].location !== node.location && attempts < 20);
+      if (stayInCluster && orgNodes.length > 1) {
+        // Pick from same organization
+        targetIndex = orgNodes[randomInt(0, orgNodes.length - 1)];
       } else {
-        // Connect to anywhere (bridge between clusters)
+        // Connect to anywhere
         targetIndex = randomInt(0, nodes.length - 1);
       }
 
       if (targetIndex !== i) {
-        // Check if link already exists (simple string check or just push and let graph handle dupes)
-        // ForceGraph handles dupes usually, but cleaner to not have self-loops
         links.push({
           source: node.id,
           target: nodes[targetIndex].id,

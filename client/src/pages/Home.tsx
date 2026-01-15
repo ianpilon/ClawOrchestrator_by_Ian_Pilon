@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { AnimatePresence } from 'framer-motion';
 import { Crosshair, ShieldAlert, Target, Activity, Share2, Terminal } from 'lucide-react';
 
-// Generate data once
-const graphData = generateGraphData(1000);
+// Generate data once (total ~27,500 nodes across all organizations)
+const graphData = generateGraphData();
 
 export default function Home() {
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
