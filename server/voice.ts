@@ -56,6 +56,12 @@ export function setupVoiceWebSocket(httpServer: Server) {
                 },
               },
             },
+            turn_detection: {
+              type: "server_vad",
+              threshold: 0.3,
+              prefix_padding_ms: 300,
+              silence_duration_ms: 800,
+            },
           },
         })
       );
@@ -63,9 +69,14 @@ export function setupVoiceWebSocket(httpServer: Server) {
       clientWs.send(JSON.stringify({ type: "session.ready" }));
     });
 
+    let audioChunkCount = 0;
     clientWs.on("message", (data) => {
       if (xaiWs?.readyState === WebSocket.OPEN) {
         if (data instanceof Buffer) {
+          audioChunkCount++;
+          if (audioChunkCount % 50 === 1) {
+            log(`Audio chunk #${audioChunkCount}, size: ${data.length} bytes`, "voice");
+          }
           xaiWs.send(
             JSON.stringify({
               type: "input_audio_buffer.append",
@@ -75,6 +86,7 @@ export function setupVoiceWebSocket(httpServer: Server) {
         } else {
           try {
             const message = JSON.parse(data.toString());
+            log(`Client command: ${message.type}`, "voice");
             xaiWs.send(JSON.stringify(message));
           } catch {
             log("Failed to parse client message", "voice");
