@@ -149,7 +149,7 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange }: Netwo
   }, [filter]);
 
   return (
-    <div className="absolute inset-0 bg-background overflow-hidden cursor-crosshair">
+    <div className="absolute inset-0 bg-background overflow-hidden cursor-grab active:cursor-grabbing">
       <ForceGraph2D
         ref={graphRef}
         width={dimensions.w}
