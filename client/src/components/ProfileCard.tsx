@@ -50,7 +50,7 @@ export function ProfileCard({ node, onClose }: ProfileCardProps) {
                 <img
                   src={node.img}
                   alt={node.name}
-                  className="w-16 h-16 grayscale opacity-80 border border-white/10"
+                  className="w-16 h-16 rounded-full object-cover border border-white/10"
                 />
                 <div className={`absolute -bottom-1 -right-1 w-2 h-2 ${node.exceptional ? 'bg-secondary' : 'bg-emerald-500'} border border-black`} />
              </div>

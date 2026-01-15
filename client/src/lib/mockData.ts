@@ -1,8 +1,9 @@
-import avatarMale from '@assets/generated_images/cyberpunk_tech_professional_avatar_male.png';
-import avatarFemale from '@assets/generated_images/cyberpunk_tech_professional_avatar_female.png';
-import avatarAndro from '@assets/generated_images/cyberpunk_tech_professional_avatar_androgynous.png';
-
-const avatars = [avatarMale, avatarFemale, avatarAndro];
+// Use realistic placeholder avatars from UI Avatars service
+const getAvatarUrl = (name: string) => {
+  const colors = ['0D8ABC', '6366F1', '8B5CF6', 'EC4899', '10B981', 'F59E0B', 'EF4444', '06B6D4'];
+  const color = colors[Math.abs(name.charCodeAt(0) + name.charCodeAt(name.length - 1)) % colors.length];
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${color}&color=fff&size=128&bold=true`;
+};
 
 const firstNames = ['Alex', 'Jordan', 'Casey', 'Riley', 'Morgan', 'Taylor', 'Avery', 'Parker', 'Quinn', 'Skyler', 'Hiro', 'Suki', 'Zane', 'Lyra', 'Kael', 'Nova', 'Orion', 'Vega', 'Ryla', 'Jinx'];
 const lastNames = ['Chen', 'Smith', 'Kim', 'Patel', 'Rivera', 'Zhang', 'Kowalski', 'Dubois', 'Silva', 'Tanaka', 'Sterling', 'Vance', 'Mercer', 'Steel', 'Frost', 'Shadow', 'Light', 'Byte', 'Cipher', 'Voss'];
@@ -143,7 +144,7 @@ function createFeaturedNode(profile: { name: string; location: string; role: str
     name: profile.name,
     role: profile.role,
     company: randomItem(companies),
-    img: randomItem(avatars),
+    img: getAvatarUrl(profile.name),
     exceptional: true,
     skills: Array.from({ length: 5 }, () => randomItem(skillsList)),
     psychographic: {
@@ -203,12 +204,13 @@ export function generateGraphData() {
       const shuffledTraits = [...exceptionalTraits].sort(() => Math.random() - 0.5);
       const selectedTraits = shuffledTraits.slice(0, numTraits);
 
+      const nodeName = `${fn} ${ln}`;
       nodes.push({
         id: `u${nodeIndex}`,
-        name: `${fn} ${ln}`,
+        name: nodeName,
         role: randomItem(roles),
         company: org.name,
-        img: randomItem(avatars),
+        img: getAvatarUrl(nodeName),
         exceptional: isExceptional,
         skills: Array.from({ length: randomInt(3, 6) }, () => randomItem(skillsList)),
         psychographic: {
