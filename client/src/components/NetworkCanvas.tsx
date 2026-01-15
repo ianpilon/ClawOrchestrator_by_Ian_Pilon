@@ -11,9 +11,10 @@ interface NetworkCanvasProps {
   filter: 'all' | 'exceptional';
   onZoomChange?: (zoom: number) => void;
   selectedNodeId?: string | null;
+  focusNodeId?: string | null;
 }
 
-export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selectedNodeId }: NetworkCanvasProps) {
+export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selectedNodeId, focusNodeId }: NetworkCanvasProps) {
   const graphRef = useRef<any>(null);
   const [dimensions, setDimensions] = useState({ w: window.innerWidth, h: window.innerHeight });
   
@@ -103,6 +104,27 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
       graphRef.current.d3ReheatSimulation();
     }
   }, [graphRef.current, data]);
+
+  // Handle focus/zoom to a specific node from search
+  useEffect(() => {
+    if (focusNodeId && graphRef.current) {
+      const node = data.nodes.find((n: any) => n.id === focusNodeId);
+      if (node) {
+        // Lock all nodes to prevent jiggle
+        data.nodes.forEach((n: any) => {
+          n.fx = n.x;
+          n.fy = n.y;
+        });
+        
+        // Zoom to the node
+        graphRef.current.centerAt(node.x, node.y, 1000);
+        graphRef.current.zoom(2.4, 2000);
+        
+        // Trigger node click to open profile
+        onNodeClick(node);
+      }
+    }
+  }, [focusNodeId]);
 
   const drawClusterLabels = useCallback((ctx: CanvasRenderingContext2D, globalScale: number) => {
     ctx.save();

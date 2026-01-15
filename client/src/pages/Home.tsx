@@ -6,7 +6,7 @@ import { generateGraphData, NodeData } from '@/lib/mockData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AnimatePresence } from 'framer-motion';
-import { Crosshair, ShieldAlert, Target, Share2 } from 'lucide-react';
+import { Crosshair, ShieldAlert, Target, Share2, Search } from 'lucide-react';
 
 // Generate data once (total ~27,500 nodes across all organizations)
 const graphData = generateGraphData();
@@ -16,10 +16,28 @@ export default function Home() {
   const [filter, setFilter] = useState<'all' | 'exceptional'>('all');
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isTwitterOpen, setIsTwitterOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
 
   // Stats
   const totalNodes = graphData.nodes.length;
   const exceptionalCount = graphData.nodes.filter(n => n.exceptional).length;
+
+  // Search results - limit to 8 for dropdown
+  const searchResults = useMemo(() => {
+    if (searchQuery.length < 2) return [];
+    const query = searchQuery.toLowerCase();
+    return graphData.nodes
+      .filter(n => n.name.toLowerCase().includes(query))
+      .slice(0, 8);
+  }, [searchQuery]);
+
+  const handleSearchSelect = (node: NodeData) => {
+    setSearchQuery('');
+    setFocusNodeId(node.id);
+    // Reset focus after a moment so it can be triggered again for same node
+    setTimeout(() => setFocusNodeId(null), 100);
+  };
 
   return (
     <div className="relative w-full h-screen bg-background overflow-hidden font-sans selection:bg-primary/20">
@@ -31,6 +49,7 @@ export default function Home() {
         filter={filter}
         onZoomChange={setZoomLevel}
         selectedNodeId={selectedNode?.id || null}
+        focusNodeId={focusNodeId}
       />
 
       {/* Header / Nav Overlay */}
@@ -99,6 +118,47 @@ export default function Home() {
              <span className="hud-text">Signal Filter</span>
              <Target className="w-3 h-3 text-muted-foreground" />
           </div>
+          
+          {/* Search Input */}
+          <div className="relative px-1 pb-2">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name..."
+                data-testid="input-search"
+                className="w-full h-8 pl-8 pr-3 bg-black/30 border border-white/10 rounded-none text-xs text-white placeholder:text-muted-foreground font-mono focus:outline-none focus:border-primary/50 focus:bg-black/40"
+              />
+            </div>
+            
+            {/* Search Results Dropdown */}
+            {searchResults.length > 0 && (
+              <div className="absolute left-1 right-1 top-full mt-1 bg-background/95 border border-white/10 backdrop-blur-sm z-50 max-h-64 overflow-y-auto">
+                {searchResults.map((node) => (
+                  <button
+                    key={node.id}
+                    onClick={() => handleSearchSelect(node)}
+                    data-testid={`search-result-${node.id}`}
+                    className="w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-white/5 border-b border-white/5 last:border-b-0 transition-colors"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
+                      {node.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs text-white font-medium truncate">{node.name}</div>
+                      <div className="text-[10px] text-muted-foreground truncate">{node.role} • {node.company}</div>
+                    </div>
+                    {node.exceptional && (
+                      <div className="w-2 h-2 rounded-full bg-secondary flex-shrink-0" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
           <div className="flex gap-1 bg-black/20 p-1">
             <Button 
               variant="ghost"
