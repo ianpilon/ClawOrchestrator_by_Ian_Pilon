@@ -12,7 +12,16 @@ import avatar10 from '@assets/generated_images/mixed-race_female_creative_profes
 
 const avatars = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8, avatar9, avatar10];
 
+// Custom avatars for specific people
+const customAvatars: Record<string, string> = {
+  'Ian Pilon': 'https://pbs.twimg.com/profile_images/2006940793265606656/93QT6QTT_400x400.jpg',
+};
+
 const getAvatarUrl = (name: string) => {
+  // Check for custom avatar first
+  if (customAvatars[name]) {
+    return customAvatars[name];
+  }
   // Use name to deterministically pick an avatar
   const index = Math.abs(name.charCodeAt(0) + name.charCodeAt(name.length - 1)) % avatars.length;
   return avatars[index];
