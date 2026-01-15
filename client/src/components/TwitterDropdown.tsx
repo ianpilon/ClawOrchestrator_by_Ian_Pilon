@@ -97,9 +97,6 @@ export function TwitterDropdown({ isOpen, onClose }: TwitterDropdownProps) {
               <button className="p-1.5 border border-gray-600 rounded-full hover:bg-gray-800">
                 <Mail className="w-4 h-4 text-white" />
               </button>
-              <button className="px-4 py-1.5 bg-white text-black font-bold text-sm rounded-full hover:bg-gray-200">
-                Following
-              </button>
             </div>
           </div>
           
