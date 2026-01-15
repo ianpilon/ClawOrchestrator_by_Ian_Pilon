@@ -291,6 +291,16 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
         d3VelocityDecay={0.7}
         warmupTicks={50}
         enableNodeDrag={true}
+        onNodeDrag={(node: any) => {
+          // During drag, update fixed position to follow cursor smoothly
+          node.fx = node.x;
+          node.fy = node.y;
+        }}
+        onNodeDragEnd={(node: any) => {
+          // Keep node fixed where user dropped it
+          node.fx = node.x;
+          node.fy = node.y;
+        }}
         onEngineStop={() => {
            // Engine stopped
         }}
