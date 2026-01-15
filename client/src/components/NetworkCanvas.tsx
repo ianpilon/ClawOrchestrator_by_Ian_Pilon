@@ -290,7 +290,7 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
         d3AlphaDecay={0.05}
         d3VelocityDecay={0.7}
         warmupTicks={50}
-        enableNodeDrag={false}
+        enableNodeDrag={true}
         onEngineStop={() => {
            // Engine stopped
         }}
