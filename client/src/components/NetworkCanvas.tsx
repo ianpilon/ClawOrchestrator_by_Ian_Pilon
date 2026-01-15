@@ -160,6 +160,8 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange }: Netwo
         nodeRelSize={4}
         linkColor={() => '#1e293b'} // slate-800 (Very subtle links)
         linkWidth={1}
+        minZoom={0.5}
+        maxZoom={2.4}
         onNodeClick={(node: any) => {
             // NUCLEAR OPTION: Lock all nodes in place to absolutely prevent jiggle
             data.nodes.forEach((n: any) => {
@@ -167,9 +169,9 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange }: Netwo
                n.fy = n.y;
             });
             
-            // Zoom to node
+            // Zoom to node (capped at max zoom)
             graphRef.current?.centerAt(node.x, node.y, 1000);
-            graphRef.current?.zoom(5, 2000);
+            graphRef.current?.zoom(2.4, 2000);
             
             onNodeClick(node);
         }}
