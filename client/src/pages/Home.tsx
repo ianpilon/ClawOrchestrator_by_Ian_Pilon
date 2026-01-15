@@ -39,7 +39,7 @@ export default function Home() {
           <div className="hud-panel p-4 w-72 hud-corner-tl">
              <div className="flex items-center gap-3 mb-2">
                 <div className="status-indicator" />
-                <span className="hud-text text-primary font-bold">SENTRIX // RECON</span>
+                <span className="hud-text text-primary font-bold">Global Situational Awareness System</span>
              </div>
              <div className="h-px bg-white/5 w-full mb-3" />
              <h1 className="text-2xl font-bold uppercase tracking-wider text-foreground flex items-center gap-3">
