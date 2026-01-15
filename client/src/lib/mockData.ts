@@ -248,7 +248,9 @@ export function generateGraphData() {
 
   // Generate Links (Prefer intra-cluster connections)
   nodes.forEach((node, i) => {
-    // Reduced links by 50% for cleaner visualization
+    // Skip 25% of nodes to further reduce edge count
+    if (Math.random() < 0.25) return;
+    
     const numLinks = node.exceptional ? randomInt(1, 2) : 1;
     const orgNodes = nodesByOrg[node.location] || [];
 
