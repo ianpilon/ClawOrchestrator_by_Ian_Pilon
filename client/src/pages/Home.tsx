@@ -45,6 +45,19 @@ export default function Home() {
     setTimeout(() => setFocusNodeId(null), 100);
   };
 
+  // Compute connections for the currently selected node (for voice navigation)
+  const currentConnections = useMemo(() => {
+    if (!selectedNode) return [];
+    const connectedIds = new Set<string>();
+    graphData.links.forEach(link => {
+      const sourceId = typeof link.source === 'object' ? (link.source as any).id : link.source;
+      const targetId = typeof link.target === 'object' ? (link.target as any).id : link.target;
+      if (sourceId === selectedNode.id) connectedIds.add(targetId);
+      if (targetId === selectedNode.id) connectedIds.add(sourceId);
+    });
+    return graphData.nodes.filter(n => connectedIds.has(n.id) && n.id !== selectedNode.id);
+  }, [selectedNode]);
+
   return (
     <div className="relative w-full h-screen bg-background overflow-hidden font-sans selection:bg-primary/20">
       
@@ -186,6 +199,7 @@ export default function Home() {
         <VoiceAI 
           peopleData={graphData.nodes} 
           onPersonFound={handleVoicePersonFound}
+          currentConnections={currentConnections}
         />
       </div>
 

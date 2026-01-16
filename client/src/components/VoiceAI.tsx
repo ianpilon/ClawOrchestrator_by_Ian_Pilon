@@ -6,9 +6,10 @@ import type { NodeData } from '@/lib/mockData';
 interface VoiceAIProps {
   peopleData: NodeData[];
   onPersonFound: (person: NodeData) => void;
+  currentConnections?: NodeData[];
 }
 
-export function VoiceAI({ peopleData, onPersonFound }: VoiceAIProps) {
+export function VoiceAI({ peopleData, onPersonFound, currentConnections = [] }: VoiceAIProps) {
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -58,8 +59,8 @@ export function VoiceAI({ peopleData, onPersonFound }: VoiceAIProps) {
         const skipWords = ['the', 'this', 'that', 'profile', 'person', 'someone', 'anybody', 'everyone', 'a', 'an'];
         if (skipWords.includes(requestedName)) continue;
 
-        // Find best matching person
-        const person = peopleData.find(p => {
+        // Helper function to match a name
+        const matchesName = (p: NodeData) => {
           const fullName = p.name.toLowerCase();
           const nameParts = fullName.split(' ');
           const firstName = nameParts[0];
@@ -80,7 +81,19 @@ export function VoiceAI({ peopleData, onPersonFound }: VoiceAIProps) {
           }
 
           return false;
-        });
+        };
+
+        // PRIORITY 1: Search within current connections first (when a profile is open)
+        let person = currentConnections.find(matchesName);
+        
+        // PRIORITY 2: Fall back to full database search
+        if (!person) {
+          person = peopleData.find(matchesName);
+        }
+        
+        if (person) {
+          console.log('[VoiceAI] Matched from:', currentConnections.includes(person) ? 'connections' : 'full database');
+        }
 
         // Allow re-trigger after 3 seconds cooldown for same person
         const now = Date.now();
@@ -102,7 +115,7 @@ export function VoiceAI({ peopleData, onPersonFound }: VoiceAIProps) {
       }
     }
     return false;
-  }, [peopleData, onPersonFound]);
+  }, [peopleData, onPersonFound, currentConnections]);
 
   const floatTo16BitPCM = (float32Array: Float32Array): Int16Array => {
     const int16Array = new Int16Array(float32Array.length);
