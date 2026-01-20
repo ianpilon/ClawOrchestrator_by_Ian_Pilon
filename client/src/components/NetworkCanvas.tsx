@@ -95,6 +95,9 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
       
       graphRef.current.d3Force('cluster', clusterForce);
       graphRef.current.d3ReheatSimulation();
+      
+      // Set initial zoom to 2.4x
+      graphRef.current.zoom(2.4, 0);
     }
   }, [graphRef.current, data]);
 
