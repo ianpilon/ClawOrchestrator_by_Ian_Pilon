@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, ChevronDown, Plus, Send, Clock, Pencil, Terminal } from 'lucide-react';
+import { X, ChevronDown, Plus, Send, Clock, Pencil, Terminal, Bot, Cpu } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface TerminalChatProps {
   isOpen: boolean;
@@ -84,42 +86,58 @@ export function TerminalChat({ isOpen, onClose }: TerminalChatProps) {
 
   return (
     <div 
-      className="absolute top-14 right-0 w-[420px] bg-[#0d0d0d] border border-gray-800 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col" 
+      className="absolute top-14 right-0 w-[420px] bg-[#1a1c23]/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50 flex flex-col" 
       style={{ height: 'calc(100vh - 56px - 16px)' }}
       data-testid="terminal-chat"
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800/50 bg-[#0d0d0d]">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <span className="text-orange-400 text-lg">❋</span>
-            <span className="font-semibold text-white">Gas Town Code</span>
+      {/* Tactical Corner Markers */}
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/50 z-10" />
+      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-primary/50 z-10" />
+      <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-primary/50 z-10" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/50 z-10" />
+
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/[0.02]">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Terminal className="w-4 h-4 text-primary" />
+            <span className="text-xs font-mono uppercase tracking-widest text-foreground">Gas Town Terminal</span>
           </div>
-          <button 
-            onClick={onClose}
-            className="p-1 hover:bg-gray-800 rounded transition-colors ml-1"
-            data-testid="close-terminal"
-          >
-            <X className="w-4 h-4 text-gray-500" />
-          </button>
+          <Badge variant="outline" className="rounded-none text-[8px] border-primary/30 text-primary">
+            ONLINE
+          </Badge>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 text-gray-500">
-            <span className="text-orange-400 text-sm">❋</span>
-          </div>
-          <button className="p-1 hover:bg-gray-800 rounded transition-colors" data-testid="new-chat">
-            <Plus className="w-4 h-4 text-gray-400" />
-          </button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 hover:bg-white/5 text-muted-foreground hover:text-foreground rounded-none"
+            data-testid="new-chat"
+          >
+            <Plus className="w-3 h-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-6 w-6 hover:bg-white/5 text-muted-foreground hover:text-foreground rounded-none"
+            data-testid="close-terminal"
+          >
+            <X className="w-3 h-3" />
+          </Button>
         </div>
       </div>
 
-      <div className="px-4 py-2 border-b border-gray-800/30">
+      {/* Past Conversations Dropdown */}
+      <div className="px-4 py-2 border-b border-white/5">
         <button 
           onClick={() => setShowConversations(!showConversations)}
-          className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors"
+          className="flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
           data-testid="past-conversations-toggle"
         >
-          <span>Past Conversations</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${showConversations ? 'rotate-180' : ''}`} />
+          <Clock className="w-3 h-3" />
+          <span className="uppercase tracking-wider">Past Conversations</span>
+          <ChevronDown className={`w-3 h-3 transition-transform ${showConversations ? 'rotate-180' : ''}`} />
         </button>
         
         {showConversations && (
@@ -127,42 +145,36 @@ export function TerminalChat({ isOpen, onClose }: TerminalChatProps) {
             {mockConversations.map(conv => (
               <button 
                 key={conv.id}
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800/50 transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-primary/50"
                 data-testid={`conversation-${conv.id}`}
               >
-                <div className="text-sm text-gray-300">{conv.title}</div>
-                <div className="text-xs text-gray-500">{conv.date}</div>
+                <div className="text-xs font-mono text-foreground">{conv.title}</div>
+                <div className="text-[10px] font-mono text-muted-foreground">{conv.date}</div>
               </button>
             ))}
           </div>
         )}
       </div>
 
+      {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center px-6 text-center">
             <div className="mb-6">
-              <div className="text-orange-400 text-4xl mb-2 font-mono">
-                <span className="inline-block animate-pulse">❋</span>
-                <span className="text-3xl ml-1">Gas Town Code</span>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Cpu className="w-5 h-5 text-primary" />
+                <span className="text-sm font-mono uppercase tracking-widest text-primary">Gas Town Terminal</span>
               </div>
-              <div className="w-20 h-20 mx-auto my-6 flex items-center justify-center">
-                <svg viewBox="0 0 48 48" className="w-full h-full">
-                  <rect x="12" y="20" width="24" height="16" rx="2" fill="#d97706" />
-                  <rect x="8" y="14" width="8" height="10" rx="1" fill="#d97706" />
-                  <rect x="32" y="14" width="8" height="10" rx="1" fill="#d97706" />
-                  <circle cx="18" cy="28" r="3" fill="#0d0d0d" />
-                  <circle cx="30" cy="28" r="3" fill="#0d0d0d" />
-                  <rect x="16" y="36" width="4" height="4" fill="#d97706" />
-                  <rect x="28" y="36" width="4" height="4" fill="#d97706" />
-                </svg>
+              
+              <div className="w-20 h-20 mx-auto my-6 flex items-center justify-center border border-white/10 bg-white/[0.02]">
+                <Bot className="w-10 h-10 text-primary/60" />
               </div>
             </div>
             
-            <p className="text-gray-400 text-sm mb-1">
-              Create a <span className="text-orange-400 font-mono">GASTOWN.md</span> file for instructions
+            <p className="text-xs font-mono text-muted-foreground mb-1">
+              Create a <span className="text-primary">GASTOWN.md</span> file for instructions
             </p>
-            <p className="text-gray-500 text-sm">
+            <p className="text-[10px] font-mono text-muted-foreground/60">
               The Mayor will read every single time.
             </p>
           </div>
@@ -175,34 +187,34 @@ export function TerminalChat({ isOpen, onClose }: TerminalChatProps) {
                 data-testid={`message-${msg.id}`}
               >
                 <div 
-                  className={`max-w-[85%] px-4 py-2.5 rounded-2xl ${
+                  className={`max-w-[85%] px-3 py-2 ${
                     msg.role === 'user' 
-                      ? 'bg-orange-600/20 text-orange-100 border border-orange-600/30' 
-                      : 'bg-gray-800/50 text-gray-200 border border-gray-700/50'
+                      ? 'bg-primary/10 text-foreground border border-primary/20' 
+                      : 'bg-white/[0.02] text-foreground border border-white/5'
                   }`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="flex items-center gap-1.5 mb-1.5 text-orange-400 text-xs">
-                      <span>❋</span>
-                      <span className="font-medium">Gas Town</span>
+                    <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-mono uppercase tracking-wider text-primary">
+                      <Bot className="w-3 h-3" />
+                      <span>Gas Town</span>
                     </div>
                   )}
-                  <p className="text-sm font-mono leading-relaxed">{msg.content}</p>
+                  <p className="text-xs font-mono leading-relaxed">{msg.content}</p>
                 </div>
               </div>
             ))}
             
             {isTyping && (
               <div className="flex justify-start" data-testid="typing-indicator">
-                <div className="bg-gray-800/50 text-gray-400 px-4 py-3 rounded-2xl border border-gray-700/50">
-                  <div className="flex items-center gap-1.5 mb-1.5 text-orange-400 text-xs">
-                    <span>❋</span>
-                    <span className="font-medium">Gas Town</span>
+                <div className="bg-white/[0.02] text-muted-foreground px-3 py-2 border border-white/5">
+                  <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-mono uppercase tracking-wider text-primary">
+                    <Bot className="w-3 h-3" />
+                    <span>Gas Town</span>
                   </div>
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               </div>
@@ -213,26 +225,26 @@ export function TerminalChat({ isOpen, onClose }: TerminalChatProps) {
         )}
       </div>
 
-      <div className="border-t border-gray-800/50 bg-[#0d0d0d]">
-        <div className="px-3 py-2 text-xs text-gray-500 flex items-center gap-2 border-b border-gray-800/30">
-          <span className="text-gray-600">⎋</span>
-          <span>Esc to focus or unfocus Gas Town</span>
+      {/* Input Area */}
+      <div className="border-t border-white/5 bg-white/[0.02]">
+        <div className="px-3 py-2 text-[10px] font-mono text-muted-foreground/60 flex items-center gap-2 border-b border-white/5">
+          <span className="text-primary/40">ESC</span>
+          <span>to focus or unfocus terminal</span>
           <button 
-            className="ml-auto flex items-center gap-1 hover:text-gray-400 transition-colors"
-            onClick={() => {}}
+            className="ml-auto flex items-center gap-1 hover:text-muted-foreground transition-colors"
             data-testid="command-history"
           >
             <Clock className="w-3 h-3" />
           </button>
-          <span className="text-gray-600">/</span>
+          <span className="text-primary/40">/</span>
         </div>
         
         <div className="p-3">
-          <div className="flex items-center gap-2 bg-[#1a1a1a] border border-gray-700 rounded-xl px-4 py-2.5 focus-within:border-orange-500/50 transition-colors">
+          <div className="flex items-center gap-2 bg-[#0d0f12] border border-white/10 px-3 py-2 focus-within:border-primary/50 transition-colors">
             <button 
               onClick={() => setAskBeforeEdits(!askBeforeEdits)}
-              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
-                askBeforeEdits ? 'bg-gray-700 text-gray-300' : 'text-gray-500 hover:text-gray-400'
+              className={`flex items-center gap-1.5 text-[10px] font-mono uppercase px-2 py-1 transition-colors ${
+                askBeforeEdits ? 'bg-white/5 text-foreground border border-white/10' : 'text-muted-foreground hover:text-foreground'
               }`}
               data-testid="ask-before-edits"
             >
@@ -246,23 +258,24 @@ export function TerminalChat({ isOpen, onClose }: TerminalChatProps) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Gas Town..."
-              className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder:text-gray-500 font-mono"
+              placeholder="Enter command..."
+              className="flex-1 bg-transparent border-none outline-none text-foreground text-xs placeholder:text-muted-foreground/40 font-mono"
               data-testid="chat-input"
             />
             
-            <button 
+            <Button 
               onClick={handleSend}
               disabled={!inputValue.trim()}
-              className={`p-2 rounded-lg transition-colors ${
+              size="icon"
+              className={`h-7 w-7 rounded-none transition-colors ${
                 inputValue.trim() 
-                  ? 'bg-orange-500 hover:bg-orange-600 text-white' 
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  ? 'bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30' 
+                  : 'bg-white/5 text-muted-foreground border border-white/10 cursor-not-allowed'
               }`}
               data-testid="send-message"
             >
-              <Send className="w-4 h-4" />
-            </button>
+              <Send className="w-3 h-3" />
+            </Button>
           </div>
         </div>
       </div>
