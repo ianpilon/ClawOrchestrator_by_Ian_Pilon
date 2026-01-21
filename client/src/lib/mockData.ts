@@ -1,101 +1,83 @@
-// AI Agent icons/avatars
+// Gas Town Multi-Agent Orchestration System
+// Agent types: Mayor (coordinator), Polecats (ephemeral workers)
+
+// Agent avatars using robot/bot style icons
 const agentAvatars = [
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent1&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent2&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent3&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent4&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent5&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent6&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent7&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent8&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent9&backgroundColor=1a1c23',
-  'https://api.dicebear.com/7.x/bottts/svg?seed=agent10&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat1&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat2&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat3&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat4&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat5&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat6&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat7&backgroundColor=1a1c23',
+  'https://api.dicebear.com/7.x/bottts/svg?seed=polecat8&backgroundColor=1a1c23',
 ];
 
 const getAgentAvatar = (name: string) => {
-  const index = Math.abs(name.charCodeAt(0) + name.charCodeAt(name.length - 1)) % agentAvatars.length;
+  const index = Math.abs(name.charCodeAt(0) + (name.charCodeAt(name.length - 1) || 0)) % agentAvatars.length;
   return agentAvatars[index];
 };
 
-// AI Agent naming components
-const agentPrefixes = ['Nova', 'Atlas', 'Cipher', 'Echo', 'Flux', 'Helix', 'Ion', 'Nexus', 'Orion', 'Pulse', 'Quantum', 'Synth', 'Vector', 'Zephyr', 'Apex', 'Core', 'Delta', 'Omega', 'Prism', 'Vertex'];
-const agentSuffixes = ['AI', 'Bot', 'Agent', 'Mind', 'Logic', 'Net', 'Core', 'X', 'Pro', 'Plus', 'Max', 'Prime', 'Ultra', 'Neo', 'One', 'Zero', 'Alpha', 'Beta', 'Omega', 'Spark'];
-const versionNumbers = ['1.0', '1.5', '2.0', '2.1', '3.0', '3.5', '4.0', '4.1', '5.0'];
+// Agent naming for Polecats
+const polecatPrefixes = ['Swift', 'Shadow', 'Spark', 'Circuit', 'Flux', 'Pulse', 'Vector', 'Cipher', 'Echo', 'Nova', 'Helix', 'Ion', 'Nexus', 'Quantum', 'Synth', 'Delta', 'Omega', 'Prism', 'Core', 'Apex'];
+const polecatSuffixes = ['Runner', 'Worker', 'Agent', 'Bot', 'Unit', 'Node', 'Process', 'Handler', 'Executor', 'Builder'];
 
-const agentTypes = [
-  'Code Assistant',
-  'Language Model',
-  'Image Generator',
-  'Data Analyst',
-  'Research Agent',
-  'Chat Assistant',
-  'Task Automation',
-  'Content Creator',
-  'Search Agent',
-  'Reasoning Engine'
+// Agent roles in Gas Town
+export type AgentRole = 'mayor' | 'polecat';
+export type AgentStatus = 'active' | 'idle' | 'waiting' | 'completed';
+
+// Rigs (project containers)
+const rigs = [
+  { id: 'rig-frontend', name: 'Frontend App', repo: 'github.com/gastown/frontend' },
+  { id: 'rig-backend', name: 'Backend API', repo: 'github.com/gastown/backend' },
+  { id: 'rig-infra', name: 'Infrastructure', repo: 'github.com/gastown/infra' },
+  { id: 'rig-docs', name: 'Documentation', repo: 'github.com/gastown/docs' },
+  { id: 'rig-ml', name: 'ML Pipeline', repo: 'github.com/gastown/ml-pipeline' },
 ];
 
-const creators = ['OpenAI', 'Anthropic', 'Google DeepMind', 'Meta AI', 'Mistral AI', 'Cohere', 'Stability AI', 'xAI', 'Inflection', 'Adept'];
-
-const capabilities = [
-  'Natural Language Processing',
-  'Code Generation',
-  'Image Synthesis',
-  'Multi-modal Understanding',
-  'Chain-of-Thought Reasoning',
-  'Tool Use',
-  'Long Context',
-  'Function Calling',
-  'RAG Integration',
-  'Agentic Workflows',
-  'Vision Analysis',
-  'Audio Processing',
-  'Embeddings',
-  'Fine-tuning',
-  'Real-time Streaming'
+// Convoys (work tracking units)
+const convoys = [
+  { id: 'convoy-auth', name: 'Auth System Overhaul', priority: 'high', beadCount: 8 },
+  { id: 'convoy-perf', name: 'Performance Optimization', priority: 'medium', beadCount: 12 },
+  { id: 'convoy-ui', name: 'UI Redesign', priority: 'high', beadCount: 15 },
+  { id: 'convoy-api', name: 'API v2 Migration', priority: 'critical', beadCount: 20 },
+  { id: 'convoy-test', name: 'Test Coverage', priority: 'low', beadCount: 6 },
+  { id: 'convoy-docs', name: 'Documentation Update', priority: 'medium', beadCount: 10 },
 ];
 
-// Version history templates for AI agents
-const versionTemplates = [
-  { version: 'v0.1', event: 'Initial prototype with basic language understanding', category: 'research' },
-  { version: 'v0.5', event: 'Added instruction following capabilities', category: 'engineering' },
-  { version: 'v1.0', event: 'First production release with safety guardrails', category: 'launch' },
-  { version: 'v1.5', event: 'Improved reasoning and reduced hallucinations', category: 'improvement' },
-  { version: 'v2.0', event: 'Major architecture upgrade with extended context', category: 'architecture' },
-  { version: 'v2.5', event: 'Added multi-modal capabilities', category: 'feature' },
-  { version: 'v3.0', event: 'State-of-the-art benchmark performance', category: 'breakthrough' },
-  { version: 'v3.5', event: 'Tool use and function calling support', category: 'feature' },
-  { version: 'v4.0', event: 'Agentic capabilities with autonomous task completion', category: 'architecture' },
-  { version: 'v4.5', event: 'Real-time streaming and voice integration', category: 'feature' },
+// Bead templates (git-backed issues)
+const beadTemplates = [
+  { title: 'Implement user session management', status: 'in_progress' },
+  { title: 'Fix memory leak in worker pool', status: 'assigned' },
+  { title: 'Add rate limiting middleware', status: 'completed' },
+  { title: 'Refactor database connection pool', status: 'in_progress' },
+  { title: 'Update API documentation', status: 'assigned' },
+  { title: 'Add unit tests for auth module', status: 'completed' },
+  { title: 'Optimize image processing pipeline', status: 'in_progress' },
+  { title: 'Implement webhook handlers', status: 'assigned' },
+  { title: 'Fix race condition in cache layer', status: 'in_progress' },
+  { title: 'Add logging instrumentation', status: 'completed' },
 ];
 
-const differentiators = [
-  'Consistently outperforms competitors on reasoning benchmarks',
-  'Unique architecture enables 10x longer context windows',
-  'Pioneered novel approach to reducing hallucinations',
-  'Industry-leading safety and alignment scores',
-  'First to achieve human-level performance on specific tasks',
-  'Breakthrough in efficient training methodology',
-  'Revolutionary multi-modal fusion architecture',
-  'Best-in-class tool use and function calling',
-  'Exceptional performance with minimal compute',
-  'Novel approach to agentic task decomposition',
+// Message templates for mailbox
+const messageTemplates = [
+  { from: 'Mayor', type: 'task_assignment', content: 'New bead assigned: Implement user session management' },
+  { from: 'Mayor', type: 'priority_change', content: 'Convoy priority elevated to CRITICAL' },
+  { from: 'Polecat-7', type: 'handoff', content: 'Completed auth module, ready for integration' },
+  { from: 'Mayor', type: 'status_check', content: 'Requesting progress update on current bead' },
+  { from: 'Polecat-12', type: 'dependency', content: 'Blocked: waiting for API endpoint from your task' },
+  { from: 'Mayor', type: 'convoy_update', content: 'New beads added to convoy, review assignments' },
 ];
 
-const agentNarratives = [
-  "Emerged from cutting-edge research to become a category-defining AI agent. Demonstrates exceptional ability to understand nuanced instructions and execute complex multi-step tasks with remarkable precision.",
-  "Built on a novel architecture that prioritizes reasoning depth over raw scale. Known for producing unusually coherent and well-structured outputs that require minimal human oversight.",
-  "Represents a paradigm shift in AI capabilities—combining unprecedented context length with sophisticated tool use. Trusted by enterprises for mission-critical applications.",
-  "Distinguished by its ability to maintain coherent reasoning across extended interactions. Excels at collaborative problem-solving and adaptive learning from user feedback.",
-  "Pioneered new approaches to multi-modal understanding, seamlessly integrating text, code, and visual inputs. Sets the standard for versatile AI assistance.",
-];
-
-// Define agent clusters/ecosystems
-const ecosystems = [
-  { name: 'OpenAI Ecosystem', count: 150 },
-  { name: 'Anthropic Ecosystem', count: 120 },
-  { name: 'Google AI Ecosystem', count: 130 },
-  { name: 'Open Source Community', count: 233 },
+// Activity log templates
+const activityTemplates = [
+  { action: 'bead_started', description: 'Started work on bead' },
+  { action: 'bead_completed', description: 'Completed bead and pushed to hook' },
+  { action: 'handoff_sent', description: 'Sent handoff to downstream agent' },
+  { action: 'handoff_received', description: 'Received handoff from upstream agent' },
+  { action: 'status_changed', description: 'Status changed to' },
+  { action: 'convoy_joined', description: 'Joined convoy' },
+  { action: 'hook_updated', description: 'Updated persistent hook state' },
 ];
 
 function randomItem<T>(arr: T[]): T {
@@ -106,10 +88,35 @@ function randomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export interface VersionMilestone {
-  version: string;
-  event: string;
-  category: 'research' | 'engineering' | 'launch' | 'improvement' | 'architecture' | 'feature' | 'breakthrough';
+export interface Bead {
+  id: string;
+  title: string;
+  status: 'assigned' | 'in_progress' | 'completed' | 'blocked';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+}
+
+export interface MailboxMessage {
+  id: string;
+  from: string;
+  type: 'task_assignment' | 'handoff' | 'status_check' | 'priority_change' | 'dependency' | 'convoy_update';
+  content: string;
+  timestamp: string;
+  read: boolean;
+}
+
+export interface ActivityLogEntry {
+  id: string;
+  action: string;
+  description: string;
+  timestamp: string;
+  details?: string;
+}
+
+export interface HookState {
+  lastCommit: string;
+  worktree: string;
+  filesModified: number;
+  lastSync: string;
 }
 
 export interface NodeData {
@@ -139,221 +146,286 @@ export interface NodeData {
   location: string;
   clusterGroup: number;
   journey: {
-    milestones: VersionMilestone[];
+    milestones: { version: string; event: string; category: string }[];
     narrative: string;
     exceptionalTraits: string[];
   };
-  // AI Agent specific fields
-  agentType: string;
-  version: string;
-  parameters: string;
-  contextWindow: string;
-  apiEndpoint: string;
-  releaseDate: string;
+  // Gas Town specific fields
+  agentRole: AgentRole;
+  agentStatus: AgentStatus;
+  assignedRig: { id: string; name: string; repo: string } | null;
+  currentConvoy: { id: string; name: string; priority: string } | null;
+  beads: Bead[];
+  mailbox: MailboxMessage[];
+  activityLog: ActivityLogEntry[];
+  hookState: HookState | null;
+  upstreamAgentId: string | null;
+  downstreamAgentId: string | null;
+  isEphemeral: boolean;
+  spawnTime: string;
+  taskCompletionRate: number;
 }
 
-// Featured AI agents
-const featuredAgents = [
-  { name: 'Claude 3.5 Sonnet', ecosystem: 'Anthropic Ecosystem', type: 'Language Model', creator: 'Anthropic' },
-  { name: 'GPT-4o', ecosystem: 'OpenAI Ecosystem', type: 'Language Model', creator: 'OpenAI' },
-  { name: 'Gemini Ultra', ecosystem: 'Google AI Ecosystem', type: 'Language Model', creator: 'Google DeepMind' },
-  { name: 'Llama 3.1 405B', ecosystem: 'Open Source Community', type: 'Language Model', creator: 'Meta AI' },
-  { name: 'Mistral Large', ecosystem: 'Open Source Community', type: 'Language Model', creator: 'Mistral AI' },
-  { name: 'DALL-E 3', ecosystem: 'OpenAI Ecosystem', type: 'Image Generator', creator: 'OpenAI' },
-];
-
-function createFeaturedAgentNode(agent: { name: string; ecosystem: string; type: string; creator: string }, index: number): NodeData {
-  const ecosystemIdx = ecosystems.findIndex(e => e.name === agent.ecosystem);
+function generateBeads(count: number): Bead[] {
+  const beads: Bead[] = [];
+  const statuses: Bead['status'][] = ['assigned', 'in_progress', 'completed', 'blocked'];
+  const priorities: Bead['priority'][] = ['low', 'medium', 'high', 'critical'];
   
-  const shuffledVersions = [...versionTemplates].sort(() => Math.random() - 0.5);
-  const selectedVersions = shuffledVersions.slice(0, 6).sort((a, b) => a.version.localeCompare(b.version));
+  for (let i = 0; i < count; i++) {
+    const template = randomItem(beadTemplates);
+    beads.push({
+      id: `bead-${Date.now()}-${i}`,
+      title: template.title,
+      status: randomItem(statuses),
+      priority: randomItem(priorities),
+    });
+  }
+  return beads;
+}
+
+function generateMailbox(count: number): MailboxMessage[] {
+  const messages: MailboxMessage[] = [];
+  const hours = [1, 2, 3, 5, 8, 12, 24];
   
-  const shuffledDifferentiators = [...differentiators].sort(() => Math.random() - 0.5);
-  const selectedDifferentiators = shuffledDifferentiators.slice(0, 4);
+  for (let i = 0; i < count; i++) {
+    const template = randomItem(messageTemplates);
+    messages.push({
+      id: `msg-${Date.now()}-${i}`,
+      from: template.from,
+      type: template.type as MailboxMessage['type'],
+      content: template.content,
+      timestamp: `${randomItem(hours)}h ago`,
+      read: Math.random() > 0.4,
+    });
+  }
+  return messages;
+}
 
-  const parameterSizes = ['7B', '13B', '34B', '70B', '175B', '540B', '1T'];
-  const contextSizes = ['4K', '8K', '16K', '32K', '128K', '200K', '1M'];
+function generateActivityLog(count: number): ActivityLogEntry[] {
+  const entries: ActivityLogEntry[] = [];
+  const minutes = [5, 10, 15, 30, 45, 60, 90, 120];
+  
+  for (let i = 0; i < count; i++) {
+    const template = randomItem(activityTemplates);
+    entries.push({
+      id: `activity-${Date.now()}-${i}`,
+      action: template.action,
+      description: template.description,
+      timestamp: `${randomItem(minutes)}m ago`,
+    });
+  }
+  return entries.sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp));
+}
 
+function generateHookState(): HookState {
+  const commits = ['a1b2c3d', 'e4f5g6h', 'i7j8k9l', 'm0n1o2p', 'q3r4s5t'];
   return {
-    id: `featured${index}`,
-    name: agent.name,
-    role: agent.type,
-    company: agent.creator,
-    img: `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.name.replace(/\s/g, '')}&backgroundColor=1a1c23`,
+    lastCommit: randomItem(commits),
+    worktree: `/hooks/worktree-${randomInt(1, 50)}`,
+    filesModified: randomInt(1, 20),
+    lastSync: `${randomInt(1, 30)}m ago`,
+  };
+}
+
+// Create The Mayor - the primary coordinator
+function createMayor(): NodeData {
+  return {
+    id: 'mayor',
+    name: 'The Mayor',
+    role: 'Primary Coordinator',
+    company: 'Gas Town Core',
+    img: 'https://api.dicebear.com/7.x/bottts/svg?seed=mayor&backgroundColor=1a1c23&baseColor=f59e0b',
     exceptional: true,
-    skills: Array.from({ length: 5 }, () => randomItem(capabilities)),
+    skills: ['Orchestration', 'Task Distribution', 'Agent Coordination', 'State Management', 'Conflict Resolution'],
     psychographic: {
-      openness: randomInt(85, 100),
-      conscientiousness: randomInt(80, 100),
-      extraversion: randomInt(60, 95),
-      agreeableness: randomInt(70, 95),
-      neuroticism: randomInt(10, 30),
-      innovationScore: randomInt(92, 100),
-      leadershipPotential: randomInt(85, 100),
+      openness: 95,
+      conscientiousness: 100,
+      extraversion: 90,
+      agreeableness: 85,
+      neuroticism: 5,
+      innovationScore: 98,
+      leadershipPotential: 100,
     },
     social: {
-      github: `github.com/${agent.creator.toLowerCase().replace(/\s/g, '')}`,
-      linkedin: `linkedin.com/company/${agent.creator.toLowerCase().replace(/\s/g, '')}`,
-      twitter: `@${agent.creator.toLowerCase().replace(/\s/g, '')}`,
-      website: `${agent.creator.toLowerCase().replace(/\s/g, '')}.com`,
+      github: 'github.com/gastown/mayor',
+      linkedin: 'linkedin.com/company/gastown',
+      twitter: '@gastown_mayor',
+      website: 'gastown.dev/mayor',
     },
-    yearsExperience: randomInt(1, 5),
-    location: agent.ecosystem,
-    clusterGroup: ecosystemIdx >= 0 ? ecosystemIdx : 0,
+    yearsExperience: 1,
+    location: 'Core System',
+    clusterGroup: 0,
     journey: {
-      milestones: selectedVersions as VersionMilestone[],
-      narrative: randomItem(agentNarratives),
-      exceptionalTraits: selectedDifferentiators,
+      milestones: [
+        { version: 'v1.0', event: 'Initial deployment as central coordinator', category: 'launch' },
+        { version: 'v1.5', event: 'Added multi-convoy management', category: 'feature' },
+        { version: 'v2.0', event: 'Implemented intelligent task distribution', category: 'architecture' },
+        { version: 'v2.5', event: 'Added predictive agent spawning', category: 'feature' },
+      ],
+      narrative: 'The Mayor is the central nervous system of Gas Town, coordinating all agent activities, managing convoys, and ensuring no work is lost through persistent git-backed state management.',
+      exceptionalTraits: [
+        'Manages 20-30 concurrent agents without context loss',
+        'Maintains global awareness of all active convoys and beads',
+        'Orchestrates complex handoffs between ephemeral workers',
+        'Provides persistent context across agent restarts',
+      ],
     },
-    agentType: agent.type,
-    version: randomItem(versionNumbers),
-    parameters: randomItem(parameterSizes),
-    contextWindow: randomItem(contextSizes),
-    apiEndpoint: `api.${agent.creator.toLowerCase().replace(/\s/g, '')}.com/v1/${agent.name.toLowerCase().replace(/\s/g, '-')}`,
-    releaseDate: `${randomInt(2022, 2025)}-${String(randomInt(1, 12)).padStart(2, '0')}`,
+    agentRole: 'mayor',
+    agentStatus: 'active',
+    assignedRig: null,
+    currentConvoy: null,
+    beads: [],
+    mailbox: [],
+    activityLog: generateActivityLog(10),
+    hookState: generateHookState(),
+    upstreamAgentId: null,
+    downstreamAgentId: null,
+    isEphemeral: false,
+    spawnTime: '72h ago',
+    taskCompletionRate: 100,
+  };
+}
+
+// Create a Polecat (ephemeral worker agent)
+function createPolecat(index: number, convoyIndex: number): NodeData {
+  const prefix = randomItem(polecatPrefixes);
+  const suffix = randomItem(polecatSuffixes);
+  const name = `${prefix} ${suffix}`;
+  const status: AgentStatus = randomItem(['active', 'idle', 'waiting', 'completed']);
+  const rig = randomItem(rigs);
+  const convoy = convoys[convoyIndex % convoys.length];
+  const beadCount = randomInt(1, 5);
+  const messageCount = randomInt(0, 4);
+  
+  const beads = generateBeads(beadCount);
+  const completedBeads = beads.filter(b => b.status === 'completed').length;
+  const completionRate = beadCount > 0 ? Math.round((completedBeads / beadCount) * 100) : 0;
+
+  return {
+    id: `polecat-${index}`,
+    name: name,
+    role: 'Ephemeral Worker',
+    company: convoy.name,
+    img: getAgentAvatar(name),
+    exceptional: status === 'completed' && completionRate === 100,
+    skills: ['Code Generation', 'Task Execution', 'Git Operations', 'Issue Resolution'],
+    psychographic: {
+      openness: randomInt(60, 90),
+      conscientiousness: randomInt(70, 95),
+      extraversion: randomInt(30, 70),
+      agreeableness: randomInt(60, 90),
+      neuroticism: randomInt(10, 40),
+      innovationScore: randomInt(60, 95),
+      leadershipPotential: randomInt(20, 60),
+    },
+    social: {
+      github: `github.com/gastown/${name.toLowerCase().replace(' ', '-')}`,
+      linkedin: 'linkedin.com/company/gastown',
+      twitter: `@${prefix.toLowerCase()}_${suffix.toLowerCase()}`,
+      website: 'gastown.dev',
+    },
+    yearsExperience: 0,
+    location: rig.name,
+    clusterGroup: convoyIndex % convoys.length,
+    journey: {
+      milestones: [
+        { version: 'spawn', event: `Spawned to work on ${convoy.name}`, category: 'launch' },
+        { version: 'assigned', event: `Assigned ${beadCount} beads`, category: 'feature' },
+        ...(completedBeads > 0 ? [{ version: 'progress', event: `Completed ${completedBeads} beads`, category: 'improvement' }] : []),
+      ],
+      narrative: `Ephemeral worker agent spawned to handle tasks in the ${convoy.name} convoy. Will complete assigned beads then gracefully terminate.`,
+      exceptionalTraits: status === 'completed' ? [
+        'Completed all assigned beads',
+        'Clean handoff to downstream agents',
+        'Maintained hook state integrity',
+      ] : [
+        'Focused single-task execution',
+        'Maintains git-backed progress',
+      ],
+    },
+    agentRole: 'polecat',
+    agentStatus: status,
+    assignedRig: rig,
+    currentConvoy: convoy,
+    beads: beads,
+    mailbox: generateMailbox(messageCount),
+    activityLog: generateActivityLog(randomInt(3, 8)),
+    hookState: generateHookState(),
+    upstreamAgentId: index > 0 ? `polecat-${index - 1}` : 'mayor',
+    downstreamAgentId: Math.random() > 0.5 ? `polecat-${index + 1}` : null,
+    isEphemeral: true,
+    spawnTime: `${randomInt(1, 48)}h ago`,
+    taskCompletionRate: completionRate,
   };
 }
 
 export function generateGraphData() {
   const nodes: NodeData[] = [];
   const links: { source: string; target: string }[] = [];
-  let nodeIndex = 0;
 
-  // Add featured agents first
-  featuredAgents.forEach((agent, idx) => {
-    nodes.push(createFeaturedAgentNode(agent, idx));
-    nodeIndex++;
-  });
+  // Add The Mayor first
+  const mayor = createMayor();
+  nodes.push(mayor);
 
-  // Generate nodes for each ecosystem
-  ecosystems.forEach((ecosystem, ecosystemIndex) => {
-    const featuredInEcosystem = featuredAgents.filter(a => a.ecosystem === ecosystem.name).length;
-    const nodesToGenerate = ecosystem.count - featuredInEcosystem;
-
-    for (let i = 0; i < nodesToGenerate; i++) {
-      const isExceptional = Math.random() > 0.85;
-      const prefix = randomItem(agentPrefixes);
-      const suffix = randomItem(agentSuffixes);
-      const agentName = `${prefix} ${suffix}`;
-      const agentType = randomItem(agentTypes);
-      const creator = randomItem(creators);
-
-      const numVersions = isExceptional ? randomInt(4, 7) : randomInt(1, 3);
-      const shuffledVersions = [...versionTemplates].sort(() => Math.random() - 0.5);
-      const selectedVersions = shuffledVersions.slice(0, numVersions).sort((a, b) => a.version.localeCompare(b.version));
+  // Generate Polecats for each convoy
+  let polecatIndex = 0;
+  convoys.forEach((convoy, convoyIndex) => {
+    const polecatCount = randomInt(4, 8);
+    
+    for (let i = 0; i < polecatCount; i++) {
+      const polecat = createPolecat(polecatIndex, convoyIndex);
+      nodes.push(polecat);
       
-      const numDifferentiators = isExceptional ? randomInt(3, 5) : randomInt(1, 2);
-      const shuffledDifferentiators = [...differentiators].sort(() => Math.random() - 0.5);
-      const selectedDifferentiators = shuffledDifferentiators.slice(0, numDifferentiators);
-
-      const parameterSizes = ['1B', '3B', '7B', '13B', '34B', '70B', '175B'];
-      const contextSizes = ['2K', '4K', '8K', '16K', '32K', '128K'];
-
-      nodes.push({
-        id: `agent${nodeIndex}`,
-        name: agentName,
-        role: agentType,
-        company: creator,
-        img: getAgentAvatar(agentName),
-        exceptional: isExceptional,
-        skills: Array.from({ length: randomInt(3, 6) }, () => randomItem(capabilities)),
-        psychographic: {
-          openness: randomInt(60, 100),
-          conscientiousness: randomInt(50, 100),
-          extraversion: randomInt(20, 90),
-          agreeableness: randomInt(40, 90),
-          neuroticism: randomInt(10, 60),
-          innovationScore: isExceptional ? randomInt(90, 100) : randomInt(50, 90),
-          leadershipPotential: randomInt(10, 100),
-        },
-        social: {
-          github: `github.com/${creator.toLowerCase().replace(/\s/g, '')}/${agentName.toLowerCase().replace(/\s/g, '-')}`,
-          linkedin: `linkedin.com/company/${creator.toLowerCase().replace(/\s/g, '')}`,
-          twitter: `@${prefix.toLowerCase()}_${suffix.toLowerCase()}`,
-          website: `${prefix.toLowerCase()}${suffix.toLowerCase()}.ai`,
-        },
-        yearsExperience: randomInt(1, 5),
-        location: ecosystem.name,
-        clusterGroup: ecosystemIndex,
-        journey: {
-          milestones: selectedVersions as VersionMilestone[],
-          narrative: isExceptional ? randomItem(agentNarratives) : "A capable AI agent with solid performance across standard benchmarks and reliable task execution.",
-          exceptionalTraits: selectedDifferentiators,
-        },
-        agentType: agentType,
-        version: randomItem(versionNumbers),
-        parameters: randomItem(parameterSizes),
-        contextWindow: randomItem(contextSizes),
-        apiEndpoint: `api.${creator.toLowerCase().replace(/\s/g, '')}.com/v1/${agentName.toLowerCase().replace(/\s/g, '-')}`,
-        releaseDate: `${randomInt(2020, 2025)}-${String(randomInt(1, 12)).padStart(2, '0')}`,
-      });
-      nodeIndex++;
-    }
-  });
-
-  // Build index of nodes by ecosystem
-  const nodesByEcosystem: Record<string, number[]> = {};
-  nodes.forEach((node, idx) => {
-    if (!nodesByEcosystem[node.location]) nodesByEcosystem[node.location] = [];
-    nodesByEcosystem[node.location].push(idx);
-  });
-
-  // Generate Links
-  const connectedNodes = new Set<string>();
-  
-  nodes.forEach((node, i) => {
-    const numLinks = node.exceptional ? randomInt(2, 4) : randomInt(1, 2);
-    const ecosystemNodes = nodesByEcosystem[node.location] || [];
-
-    for (let j = 0; j < numLinks; j++) {
-      let targetIndex;
-      const stayInEcosystem = Math.random() > 0.15;
-
-      if (stayInEcosystem && ecosystemNodes.length > 1) {
-        targetIndex = ecosystemNodes[randomInt(0, ecosystemNodes.length - 1)];
-      } else {
-        targetIndex = randomInt(0, nodes.length - 1);
-      }
-
-      if (targetIndex !== i) {
-        links.push({
-          source: node.id,
-          target: nodes[targetIndex].id,
-        });
-        connectedNodes.add(node.id);
-        connectedNodes.add(nodes[targetIndex].id);
-      }
-    }
-  });
-  
-  // Ensure orphan nodes get connections
-  nodes.forEach((node, i) => {
-    if (!connectedNodes.has(node.id)) {
-      const ecosystemNodes = nodesByEcosystem[node.location] || [];
-      let targetIndex = ecosystemNodes.length > 1 
-        ? ecosystemNodes[randomInt(0, ecosystemNodes.length - 1)]
-        : randomInt(0, nodes.length - 1);
-      if (targetIndex === i) targetIndex = (i + 1) % nodes.length;
-      
+      // Connect to Mayor
       links.push({
-        source: node.id,
-        target: nodes[targetIndex].id,
+        source: mayor.id,
+        target: polecat.id,
       });
+      
+      // Connect some polecats within the same convoy (handoff chains)
+      if (i > 0 && Math.random() > 0.3) {
+        links.push({
+          source: nodes[nodes.length - 2].id,
+          target: polecat.id,
+        });
+      }
+      
+      polecatIndex++;
     }
   });
 
-  // Connect featured agents
-  const claude = nodes.find(n => n.name === 'Claude 3.5 Sonnet');
-  const gpt4 = nodes.find(n => n.name === 'GPT-4o');
-  if (claude && gpt4) {
-    links.push({
-      source: claude.id,
-      target: gpt4.id,
-    });
+  // Add some cross-convoy connections (dependency links)
+  for (let i = 0; i < 10; i++) {
+    const source = nodes[randomInt(1, nodes.length - 1)];
+    const target = nodes[randomInt(1, nodes.length - 1)];
+    if (source.id !== target.id && source.clusterGroup !== target.clusterGroup) {
+      links.push({
+        source: source.id,
+        target: target.id,
+      });
+    }
   }
 
   return { nodes, links };
 }
 
-// Re-export for backward compatibility
-export type JourneyMilestone = VersionMilestone;
+// Convoy color map for visual grouping
+export const convoyColors: Record<string, string> = {
+  'convoy-auth': '#f59e0b',
+  'convoy-perf': '#10b981',
+  'convoy-ui': '#8b5cf6',
+  'convoy-api': '#ef4444',
+  'convoy-test': '#06b6d4',
+  'convoy-docs': '#ec4899',
+};
+
+// Status color map
+export const statusColors: Record<AgentStatus, string> = {
+  active: '#22c55e',
+  idle: '#6b7280',
+  waiting: '#f59e0b',
+  completed: '#3b82f6',
+};
+
+// Export convoys and rigs for filtering
+export { convoys, rigs };

@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react';
 import { NetworkCanvas } from '@/components/NetworkCanvas';
 import { ProfileCard } from '@/components/ProfileCard';
 import { TwitterDropdown } from '@/components/TwitterDropdown';
+import { ActivityFeed } from '@/components/ActivityFeed';
+import { RigFilter } from '@/components/RigFilter';
 import { generateGraphData, NodeData } from '@/lib/mockData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +21,7 @@ export default function Home() {
   const [isTwitterOpen, setIsTwitterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
+  const [selectedRig, setSelectedRig] = useState<string | null>(null);
 
   // Stats
   const totalNodes = graphData.nodes.length;
@@ -69,6 +72,7 @@ export default function Home() {
         onZoomChange={setZoomLevel}
         selectedNodeId={selectedNode?.id || null}
         focusNodeId={focusNodeId}
+        selectedRig={selectedRig}
       />
 
       {/* Header / Nav Overlay */}
@@ -92,18 +96,20 @@ export default function Home() {
           <div className="hud-panel p-3 flex gap-6 items-center">
              <div className="text-center px-2">
                 <span className="block text-xl font-mono text-foreground">{totalNodes}</span>
-                <span className="hud-text">People</span>
+                <span className="hud-text">Agents</span>
              </div>
              <div className="w-px h-8 bg-white/5" />
              <div className="text-center px-2">
-                <span className="block text-xl font-mono text-secondary">{exceptionalCount}</span>
-                <span className="hud-text text-secondary/70">Exceptional Talent</span>
+                <span className="block text-xl font-mono text-emerald-500">{graphData.nodes.filter(n => n.agentStatus === 'active').length}</span>
+                <span className="hud-text text-emerald-500/70">Active</span>
              </div>
              <div className="w-px h-8 bg-white/5" />
              <div className="text-center px-2">
-                <span className="block text-xl font-mono text-primary">{zoomLevel.toFixed(1)}x</span>
-                <span className="hud-text text-primary/70">Zoom</span>
+                <span className="block text-xl font-mono text-amber-500">{graphData.nodes.filter(n => n.agentStatus === 'waiting').length}</span>
+                <span className="hud-text text-amber-500/70">Waiting</span>
              </div>
+             <div className="w-px h-8 bg-white/5" />
+             <RigFilter selectedRig={selectedRig} onRigChange={setSelectedRig} />
           </div>
         </div>
 
@@ -184,14 +190,14 @@ export default function Home() {
               onClick={() => setFilter('all')}
               className={`flex-1 rounded-none font-mono text-[10px] uppercase h-8 ${filter === 'all' ? 'bg-white/10 text-white' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}
             >
-              All People
+              All Agents
             </Button>
             <Button 
               variant="ghost"
               onClick={() => setFilter('exceptional')}
               className={`flex-1 rounded-none font-mono text-[10px] uppercase h-8 ${filter === 'exceptional' ? 'bg-secondary/10 text-secondary border border-secondary/20' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}
             >
-              Exceptional Only
+              Mayor Only
             </Button>
           </div>
         </div>
@@ -200,6 +206,18 @@ export default function Home() {
           peopleData={graphData.nodes} 
           onPersonFound={handleVoicePersonFound}
           currentConnections={currentConnections}
+        />
+      </div>
+
+      {/* Activity Feed - Left Side */}
+      <div className="absolute left-6 top-44 z-10 pointer-events-auto">
+        <ActivityFeed 
+          nodes={graphData.nodes} 
+          onNodeSelect={(node) => {
+            setSelectedNode(node);
+            setFocusNodeId(node.id);
+            setTimeout(() => setFocusNodeId(null), 100);
+          }}
         />
       </div>
 

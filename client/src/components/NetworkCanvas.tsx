@@ -1,9 +1,7 @@
 import ForceGraph2D from 'react-force-graph-2d';
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
-import avatarMale from '@assets/generated_images/cyberpunk_tech_professional_avatar_male.png';
-import avatarFemale from '@assets/generated_images/cyberpunk_tech_professional_avatar_female.png';
-import avatarAndro from '@assets/generated_images/cyberpunk_tech_professional_avatar_androgynous.png';
+import { statusColors, convoyColors } from '@/lib/mockData';
 
 interface NetworkCanvasProps {
   data: any;
@@ -12,9 +10,10 @@ interface NetworkCanvasProps {
   onZoomChange?: (zoom: number) => void;
   selectedNodeId?: string | null;
   focusNodeId?: string | null;
+  selectedRig?: string | null;
 }
 
-export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selectedNodeId, focusNodeId }: NetworkCanvasProps) {
+export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selectedNodeId, focusNodeId, selectedRig }: NetworkCanvasProps) {
   const graphRef = useRef<any>(null);
   const [dimensions, setDimensions] = useState({ w: window.innerWidth, h: window.innerHeight });
   
@@ -61,18 +60,13 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
     return { nodes: data.nodes, links: filteredLinks };
   }, [data, filter]);
 
-  // Preload images
-  const images = useRef<Record<string, HTMLImageElement>>({});
-  useEffect(() => {
-    [avatarMale, avatarFemale, avatarAndro].forEach(src => {
-      const img = new Image();
-      img.src = src;
-      images.current[src] = img;
-    });
-  }, []);
-
-  const clusterCenters: Record<number, {x: number, y: number, label: string}> = {
-    0: { x: 0, y: 0, label: 'UWaterloo Software Engineering' },
+  const clusterCenters: Record<number, {x: number, y: number, label: string, color: string}> = {
+    0: { x: -200, y: -100, label: 'Auth System Overhaul', color: convoyColors['convoy-auth'] },
+    1: { x: 200, y: -100, label: 'Performance Optimization', color: convoyColors['convoy-perf'] },
+    2: { x: -200, y: 100, label: 'UI Redesign', color: convoyColors['convoy-ui'] },
+    3: { x: 200, y: 100, label: 'API v2 Migration', color: convoyColors['convoy-api'] },
+    4: { x: 0, y: -200, label: 'Test Coverage', color: convoyColors['convoy-test'] },
+    5: { x: 0, y: 200, label: 'Documentation Update', color: convoyColors['convoy-docs'] },
   };
 
   // Configure Forces for "Cluster" layout - optimized for large datasets
@@ -130,16 +124,18 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
     // Dynamic font size - bigger when zoomed out, smaller when zoomed in
     const baseFontSize = 14;
     const fontSize = Math.min(24, Math.max(8, baseFontSize / globalScale));
-    const labelOffset = 85 / globalScale;
+    const labelOffset = 50 / globalScale;
     const padding = 6 / globalScale;
     const rectHeight = 18 / globalScale;
     
     Object.values(clusterCenters).forEach(center => {
-      // Draw Grid Marker - Subtle Circle (also scale with zoom)
-      const markerSize = 80 / globalScale;
-      const crosshairSize = 10 / globalScale;
+      const color = center.color || '#82cfff';
       
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      // Draw Grid Marker - Subtle Circle (also scale with zoom)
+      const markerSize = 60 / globalScale;
+      const crosshairSize = 8 / globalScale;
+      
+      ctx.strokeStyle = color + '20';
       ctx.lineWidth = 1 / globalScale;
       
       ctx.beginPath();
@@ -160,13 +156,13 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
       ctx.fillStyle = 'rgba(22, 24, 29, 0.85)';
       ctx.fillRect(center.x - textWidth/2 - padding, center.y + labelOffset, textWidth + padding * 2, rectHeight);
       
-      // Label border
-      ctx.strokeStyle = 'rgba(130, 207, 255, 0.3)';
+      // Label border with convoy color
+      ctx.strokeStyle = color + '50';
       ctx.lineWidth = 1 / globalScale;
       ctx.strokeRect(center.x - textWidth/2 - padding, center.y + labelOffset, textWidth + padding * 2, rectHeight);
 
-      // Label text
-      ctx.fillStyle = '#82cfff';
+      // Label text with convoy color
+      ctx.fillStyle = color;
       ctx.fillText(center.label, center.x, center.y + labelOffset + rectHeight / 2);
     });
     
@@ -174,77 +170,105 @@ export function NetworkCanvas({ data, onNodeClick, filter, onZoomChange, selecte
   }, []);
 
   const paintNode = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
-    const isExceptional = node.exceptional;
-    const isFilteredOut = filter === 'exceptional' && !isExceptional;
+    const isMayor = node.agentRole === 'mayor';
     const isSelected = node.id === selectedNodeId;
     const isNeighbor = neighborIds.has(node.id);
     const hasSelection = selectedNodeId !== null && selectedNodeId !== undefined;
+    const status = node.agentStatus || 'idle';
+    const statusColor = statusColors[status as keyof typeof statusColors] || '#6b7280';
+    const convoyId = node.currentConvoy?.id;
+    const convoyColor = convoyId ? convoyColors[convoyId] || '#6b7280' : '#6b7280';
     
-    // Skip rendering non-exceptional nodes entirely (remove grey background nodes)
-    if (!isExceptional) {
-      return;
-    }
+    // Check if node matches rig filter
+    const nodeRigId = node.assignedRig?.id;
+    const matchesRigFilter = !selectedRig || isMayor || nodeRigId === selectedRig;
+    const hasRigFilter = selectedRig !== null && selectedRig !== undefined;
     
-    // Opacity: faded if filtered, or if there's a selection and this node isn't connected
+    // Opacity: faded if filtered by rig or if there's a selection and not connected
     let opacity = 1;
-    if (isFilteredOut) {
-      opacity = 0.02;
+    if (hasRigFilter && !matchesRigFilter) {
+      opacity = 0.15;
     } else if (hasSelection && !isNeighbor) {
-      opacity = 0.15; // Fade non-connected nodes when something is selected
+      opacity = 0.25;
     }
     
-    // Draw glow for exceptional nodes (brighter if selected/neighbor)
-    if (isExceptional && !isFilteredOut) {
+    // Mayor gets special treatment - larger with golden glow
+    if (isMayor) {
+      // Golden glow for Mayor
       ctx.beginPath();
-      const glowSize = isSelected ? 10 : (isNeighbor && hasSelection ? 8 : 6);
+      const glowSize = isSelected ? 18 : 14;
       ctx.arc(node.x, node.y, glowSize, 0, 2 * Math.PI, false);
-      ctx.fillStyle = isSelected ? 'rgba(252, 165, 165, 0.35)' : 'rgba(252, 165, 165, 0.15)';
-      ctx.globalAlpha = hasSelection && !isNeighbor ? 0.15 : 1;
+      ctx.fillStyle = isSelected ? 'rgba(245, 158, 11, 0.4)' : 'rgba(245, 158, 11, 0.2)';
+      ctx.globalAlpha = hasSelection && !isNeighbor ? 0.25 : 1;
       ctx.fill();
       
-      // Target ring
-      ctx.strokeStyle = '#fca5a5';
-      ctx.lineWidth = isSelected ? 0.8 : 0.3;
+      // Crown/coordinator ring
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = isSelected ? 1.5 : 1;
       ctx.beginPath();
-      ctx.arc(node.x, node.y, glowSize - 1, 0, 2 * Math.PI, false);
+      ctx.arc(node.x, node.y, glowSize - 2, 0, 2 * Math.PI, false);
+      ctx.stroke();
+      
+      // Inner ring
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, glowSize - 5, 0, 2 * Math.PI, false);
       ctx.stroke();
     }
+    
+    // Status glow for active agents
+    if (status === 'active' && !isMayor) {
+      ctx.beginPath();
+      const pulseSize = isSelected ? 8 : 5;
+      ctx.arc(node.x, node.y, pulseSize, 0, 2 * Math.PI, false);
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.2)';
+      ctx.globalAlpha = hasSelection && !isNeighbor ? 0.15 : 0.6;
+      ctx.fill();
+    }
 
-    // Node Body - larger if selected
-    const baseSize = isExceptional ? 3 : 1.5;
-    const size = isSelected ? baseSize * 2 : (isNeighbor && hasSelection ? baseSize * 1.3 : baseSize);
+    // Node Body - size based on role
+    let baseSize = isMayor ? 8 : 3;
+    if (status === 'completed') baseSize = 2;
+    const size = isSelected ? baseSize * 1.5 : (isNeighbor && hasSelection ? baseSize * 1.2 : baseSize);
+    
     ctx.beginPath();
     ctx.arc(node.x, node.y, size, 0, 2 * Math.PI, false);
     
-    // COLORS: Highlight connected nodes
+    // Color based on selection, role, or status
     if (isSelected) {
-      ctx.fillStyle = '#82cfff'; // Bright blue for selected
-    } else if (isExceptional) {
-      ctx.fillStyle = '#fca5a5'; // Pastel Red
-    } else if (isNeighbor && hasSelection) {
-      ctx.fillStyle = '#94a3b8'; // Brighter slate for neighbors
+      ctx.fillStyle = '#82cfff';
+    } else if (isMayor) {
+      ctx.fillStyle = '#f59e0b';
     } else {
-      ctx.fillStyle = '#475569'; // Slate-600
+      ctx.fillStyle = statusColor;
     }
     
     ctx.globalAlpha = opacity;
     ctx.fill();
 
+    // Convoy color ring for polecats
+    if (!isMayor && convoyId) {
+      ctx.strokeStyle = convoyColor;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, size + 1.5, 0, 2 * Math.PI, false);
+      ctx.stroke();
+    }
+
     // Reset alpha
     ctx.globalAlpha = 1;
 
-    // Draw label for selected node or neighbors, or at high zoom
-    const showLabel = isSelected || (isNeighbor && hasSelection) || (globalScale > 2.5 && !isFilteredOut);
-    if (showLabel && !isFilteredOut) {
-       ctx.font = isSelected ? 'bold 5px "Share Tech Mono"' : '400 4px "Share Tech Mono"';
+    // Draw label for selected node, neighbors, Mayor, or at high zoom
+    const showLabel = isSelected || (isNeighbor && hasSelection) || isMayor || globalScale > 2.2;
+    if (showLabel) {
+       ctx.font = isSelected || isMayor ? 'bold 5px "Share Tech Mono"' : '400 4px "Share Tech Mono"';
        ctx.textAlign = 'left';
        ctx.textBaseline = 'middle';
-       ctx.fillStyle = isSelected ? '#82cfff' : (isExceptional ? '#fca5a5' : 'rgba(255,255,255,0.5)');
-       ctx.globalAlpha = hasSelection && !isNeighbor ? 0.15 : 1;
+       ctx.fillStyle = isSelected ? '#82cfff' : (isMayor ? '#f59e0b' : statusColor);
+       ctx.globalAlpha = hasSelection && !isNeighbor ? 0.25 : 1;
        ctx.fillText(`${node.name}`, node.x + size + 4, node.y);
        ctx.globalAlpha = 1;
     }
-  }, [filter, selectedNodeId, neighborIds]);
+  }, [filter, selectedNodeId, neighborIds, selectedRig]);
 
   return (
     <div className="absolute inset-0 bg-background overflow-hidden cursor-grab active:cursor-grabbing">

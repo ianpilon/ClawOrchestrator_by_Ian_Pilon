@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { NodeData } from '@/lib/mockData';
-import { Github, Linkedin, Twitter, Globe, X, Scan, Database, MapPin, Fingerprint, Sparkles, Route, Zap, Users, Bot, Cpu, Layers, Terminal } from 'lucide-react';
+import React, { useState } from 'react';
+import { NodeData, statusColors, convoyColors } from '@/lib/mockData';
+import { X, Database, Sparkles, Route, Users, Bot, GitBranch, Package, Mail, Clock, CheckCircle, AlertCircle, Pause, Play, Circle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -13,7 +13,7 @@ interface ProfileCardProps {
   onNodeSelect?: (node: NodeData) => void;
 }
 
-type TabType = 'overview' | 'journey' | 'signals';
+type TabType = 'overview' | 'beads' | 'mailbox';
 
 export function ProfileCard({ node, onClose, graphData, onNodeSelect }: ProfileCardProps) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -36,6 +36,9 @@ export function ProfileCard({ node, onClose, graphData, onNodeSelect }: ProfileC
       }
     });
   }
+
+  const statusColor = statusColors[node.agentStatus] || '#6b7280';
+  const convoyColor = node.currentConvoy ? convoyColors[node.currentConvoy.id] || '#6b7280' : '#6b7280';
 
   return (
     <motion.div
@@ -69,16 +72,27 @@ export function ProfileCard({ node, onClose, graphData, onNodeSelect }: ProfileC
                 <img
                   src={node.img}
                   alt={node.name}
-                  className="w-16 h-16 rounded-full object-cover border border-white/10 bg-[#0d0f12]"
+                  className={`w-16 h-16 rounded-full object-cover border-2 bg-[#0d0f12] ${node.agentRole === 'mayor' ? 'border-amber-500' : 'border-white/10'}`}
                 />
-                <div className={`absolute -bottom-1 -right-1 w-2 h-2 ${node.exceptional ? 'bg-secondary' : 'bg-emerald-500'} border border-black`} />
+                <div 
+                  className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#1a1c23]"
+                  style={{ backgroundColor: statusColor }}
+                />
              </div>
-             <div>
+             <div className="flex-1">
                 <div className="text-[10px] font-mono text-primary/70 mb-1 tracking-widest flex items-center gap-1">
-                  <Bot className="w-3 h-3" /> AGENT: {node.id.toUpperCase()}
+                  <Bot className="w-3 h-3" /> 
+                  {node.agentRole === 'mayor' ? 'COORDINATOR' : 'POLECAT'} 
+                  <span className="text-muted-foreground">•</span>
+                  <span style={{ color: statusColor }} className="uppercase">{node.agentStatus}</span>
                 </div>
                 <h2 className="text-xl font-bold font-sans uppercase tracking-wide text-foreground" data-testid="text-profile-name">{node.name}</h2>
-                <div className="text-xs font-mono text-muted-foreground">{node.role} • {node.company}</div>
+                <div className="text-xs font-mono text-muted-foreground flex items-center gap-2">
+                  {node.role}
+                  {node.isEphemeral && (
+                    <Badge variant="outline" className="rounded-none text-[8px] border-amber-500/30 text-amber-500">EPHEMERAL</Badge>
+                  )}
+                </div>
              </div>
           </div>
         </div>
@@ -92,36 +106,38 @@ export function ProfileCard({ node, onClose, graphData, onNodeSelect }: ProfileC
             label="Overview"
           />
           <TabButton 
-            active={activeTab === 'journey'} 
-            onClick={() => setActiveTab('journey')}
-            icon={<Route className="w-3 h-3" />}
-            label="Journey"
+            active={activeTab === 'beads'} 
+            onClick={() => setActiveTab('beads')}
+            icon={<Package className="w-3 h-3" />}
+            label="Beads"
+            badge={node.beads.length}
           />
           <TabButton 
-            active={activeTab === 'signals'} 
-            onClick={() => setActiveTab('signals')}
-            icon={<Sparkles className="w-3 h-3" />}
-            label="Signals"
+            active={activeTab === 'mailbox'} 
+            onClick={() => setActiveTab('mailbox')}
+            icon={<Mail className="w-3 h-3" />}
+            label="Mailbox"
+            badge={node.mailbox.filter(m => !m.read).length}
           />
         </div>
         
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
-          {activeTab === 'overview' && <OverviewTab node={node} connections={connections} onNodeSelect={onNodeSelect} />}
-          {activeTab === 'journey' && <JourneyTab node={node} />}
-          {activeTab === 'signals' && <SignalsTab node={node} />}
+          {activeTab === 'overview' && <OverviewTab node={node} connections={connections} onNodeSelect={onNodeSelect} convoyColor={convoyColor} />}
+          {activeTab === 'beads' && <BeadsTab node={node} />}
+          {activeTab === 'mailbox' && <MailboxTab node={node} />}
         </div>
         
         {/* Footer */}
         <div className="p-2 border-t border-white/5 bg-[#16181d] text-[10px] font-mono text-center text-muted-foreground/50 flex-shrink-0">
-           // AGENT DATA STREAM ACTIVE //
+           // SPAWNED {node.spawnTime} // COMPLETION: {node.taskCompletionRate}%
         </div>
       </div>
     </motion.div>
   );
 }
 
-function TabButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
+function TabButton({ active, onClick, icon, label, badge }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string; badge?: number }) {
   return (
     <button
       onClick={onClick}
@@ -134,39 +150,89 @@ function TabButton({ active, onClick, icon, label }: { active: boolean; onClick:
     >
       {icon}
       {label}
+      {badge !== undefined && badge > 0 && (
+        <span className="ml-1 px-1.5 py-0.5 bg-primary/20 text-primary text-[8px] rounded-full">{badge}</span>
+      )}
     </button>
   );
 }
 
-function OverviewTab({ node, connections, onNodeSelect }: { node: NodeData; connections?: NodeData[]; onNodeSelect?: (node: NodeData) => void }) {
+function OverviewTab({ node, connections, onNodeSelect, convoyColor }: { node: NodeData; connections?: NodeData[]; onNodeSelect?: (node: NodeData) => void; convoyColor: string }) {
   return (
     <div className="p-6 space-y-6">
-      {/* Agent Specs */}
+      {/* Agent Context */}
       <div className="grid grid-cols-2 gap-3">
-         <div className="bg-white/[0.02] p-2 border border-white/5">
-            <div className="text-[10px] text-muted-foreground uppercase font-mono mb-1">Parameters</div>
+         <div className="bg-white/[0.02] p-3 border border-white/5">
+            <div className="text-[10px] text-muted-foreground uppercase font-mono mb-1">Assigned Rig</div>
             <div className="text-sm font-bold text-foreground flex items-center gap-2">
-               <Cpu className="w-3 h-3 text-primary" /> {node.parameters || '70B'}
+               <GitBranch className="w-3 h-3 text-primary" /> 
+               {node.assignedRig?.name || 'None'}
             </div>
+            {node.assignedRig && (
+              <div className="text-[9px] text-muted-foreground mt-1 truncate">{node.assignedRig.repo}</div>
+            )}
          </div>
-         <div className="bg-white/[0.02] p-2 border border-white/5">
-            <div className="text-[10px] text-muted-foreground uppercase font-mono mb-1">Context</div>
+         <div className="bg-white/[0.02] p-3 border border-white/5">
+            <div className="text-[10px] text-muted-foreground uppercase font-mono mb-1">Current Convoy</div>
             <div className="text-sm font-bold text-foreground flex items-center gap-2">
-               <Layers className="w-3 h-3 text-primary" /> {node.contextWindow || '128K'}
+               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: convoyColor }} />
+               {node.currentConvoy?.name?.split(' ')[0] || 'None'}
             </div>
+            {node.currentConvoy && (
+              <Badge 
+                variant="outline" 
+                className="rounded-none text-[8px] mt-1"
+                style={{ borderColor: convoyColor + '50', color: convoyColor }}
+              >
+                {node.currentConvoy.priority}
+              </Badge>
+            )}
          </div>
-         <div className="bg-white/[0.02] p-2 border border-white/5">
-            <div className="text-[10px] text-muted-foreground uppercase font-mono mb-1">Version</div>
-            <div className="text-sm font-bold text-foreground flex items-center gap-2">
-               <Terminal className="w-3 h-3 text-primary" /> {node.version || 'v4.0'}
+      </div>
+
+      {/* Hook State */}
+      {node.hookState && (
+        <>
+          <Separator className="bg-white/5" />
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <GitBranch className="w-3 h-3" /> Hook State
+            </h3>
+            <div className="bg-white/[0.02] border border-white/5 p-3 space-y-2">
+              <div className="flex justify-between text-[10px] font-mono">
+                <span className="text-muted-foreground">Last Commit</span>
+                <span className="text-primary">{node.hookState.lastCommit}</span>
+              </div>
+              <div className="flex justify-between text-[10px] font-mono">
+                <span className="text-muted-foreground">Worktree</span>
+                <span className="text-foreground truncate max-w-[150px]">{node.hookState.worktree}</span>
+              </div>
+              <div className="flex justify-between text-[10px] font-mono">
+                <span className="text-muted-foreground">Files Modified</span>
+                <span className="text-amber-500">{node.hookState.filesModified}</span>
+              </div>
+              <div className="flex justify-between text-[10px] font-mono">
+                <span className="text-muted-foreground">Last Sync</span>
+                <span className="text-emerald-500">{node.hookState.lastSync}</span>
+              </div>
             </div>
-         </div>
-         <div className="bg-white/[0.02] p-2 border border-white/5">
-            <div className="text-[10px] text-muted-foreground uppercase font-mono mb-1">Ecosystem</div>
-            <div className="text-sm font-bold text-white flex items-center gap-2">
-               <MapPin className="w-3 h-3 text-primary" /> {node.location.split(' ')[0].toUpperCase()}
-            </div>
-         </div>
+          </div>
+        </>
+      )}
+
+      {/* Bead Summary */}
+      <Separator className="bg-white/5" />
+      <div className="space-y-3">
+        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+           <Package className="w-3 h-3" /> Bead Progress
+        </h3>
+        <div className="grid grid-cols-4 gap-2">
+          <BeadStat label="Assigned" value={node.beads.filter(b => b.status === 'assigned').length} color="text-blue-400" />
+          <BeadStat label="Active" value={node.beads.filter(b => b.status === 'in_progress').length} color="text-amber-400" />
+          <BeadStat label="Done" value={node.beads.filter(b => b.status === 'completed').length} color="text-emerald-400" />
+          <BeadStat label="Blocked" value={node.beads.filter(b => b.status === 'blocked').length} color="text-red-400" />
+        </div>
+        <TechBar label="Completion Rate" value={node.taskCompletionRate} />
       </div>
 
       {/* Connected Agents */}
@@ -175,7 +241,7 @@ function OverviewTab({ node, connections, onNodeSelect }: { node: NodeData; conn
           <Separator className="bg-white/5" />
           <div className="space-y-3">
             <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-              <Users className="w-3 h-3" /> Related Agents ({connections.length})
+              <Users className="w-3 h-3" /> Handoff Chain ({connections.length})
             </h3>
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {connections.slice(0, 5).map((conn) => (
@@ -188,9 +254,12 @@ function OverviewTab({ node, connections, onNodeSelect }: { node: NodeData; conn
                   <img src={conn.img} alt={conn.name} className="w-8 h-8 rounded-full object-cover border border-white/10 bg-[#0d0f12]" />
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-medium text-foreground truncate">{conn.name}</div>
-                    <div className="text-[10px] text-muted-foreground truncate">{conn.role} • {conn.company}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">{conn.role} • {conn.agentStatus}</div>
                   </div>
-                  {conn.exceptional && <div className="w-2 h-2 bg-secondary flex-shrink-0" />}
+                  <div 
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: statusColors[conn.agentStatus] }}
+                  />
                 </button>
               ))}
               {connections.length > 5 && (
@@ -203,185 +272,33 @@ function OverviewTab({ node, connections, onNodeSelect }: { node: NodeData; conn
         </>
       )}
 
+      {/* Activity Log */}
       <Separator className="bg-white/5" />
-
-      {/* Performance Benchmarks */}
-      <div className="space-y-4">
-        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-           <Database className="w-3 h-3" /> Benchmark Scores
-        </h3>
-        
-        <div className="space-y-3">
-           <TechBar label="Reasoning" value={node.psychographic.innovationScore} />
-           <TechBar label="Task Completion" value={node.psychographic.leadershipPotential} />
-           <TechBar label="Instruction Following" value={node.psychographic.openness} />
-        </div>
-      </div>
-
-       {/* Capabilities */}
-       <div className="space-y-3">
-        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-           <Fingerprint className="w-3 h-3" /> Capabilities
-        </h3>
-        <div className="flex flex-wrap gap-1">
-          {node.skills.map((skill, i) => (
-            <Badge key={i} variant="outline" className="rounded-none border-white/10 text-[10px] font-mono uppercase bg-transparent text-muted-foreground hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-colors">
-              {skill}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      <Separator className="bg-white/5" />
-
-      {/* API & Links */}
-      <div className="space-y-4">
-        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-           <Scan className="w-3 h-3" /> Resources
-        </h3>
-        <div className="grid grid-cols-2 gap-2">
-           <SocialBtn icon={Github} label="Source" href={`https://${node.social.github}`} />
-           <SocialBtn icon={Linkedin} label="Company" href={`https://${node.social.linkedin}`} />
-           <SocialBtn icon={Twitter} label="Updates" href={`https://${node.social.twitter}`} />
-           <SocialBtn icon={Globe} label="Docs" href={`https://${node.social.website}`} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function JourneyTab({ node }: { node: NodeData }) {
-  const categoryColors: Record<string, string> = {
-    research: 'text-purple-400 border-purple-400/30',
-    engineering: 'text-emerald-400 border-emerald-400/30',
-    launch: 'text-amber-400 border-amber-400/30',
-    improvement: 'text-blue-400 border-blue-400/30',
-    architecture: 'text-primary border-primary/30',
-    feature: 'text-cyan-400 border-cyan-400/30',
-    breakthrough: 'text-rose-400 border-rose-400/30',
-  };
-
-  return (
-    <div className="p-6 space-y-6">
-      {/* Agent Overview */}
       <div className="space-y-3">
         <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-           <Sparkles className="w-3 h-3" /> Overview
+           <Route className="w-3 h-3" /> Recent Activity
         </h3>
-        <div className="bg-white/[0.02] border border-white/5 p-4">
-          <p className="text-sm text-foreground/80 leading-relaxed italic">
-            "{node.journey.narrative}"
-          </p>
-        </div>
-      </div>
-
-      <Separator className="bg-white/5" />
-
-      {/* Version History */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-           <Route className="w-3 h-3" /> Version History
-        </h3>
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-[39px] top-2 bottom-2 w-px bg-white/10" />
-          
-          <div className="space-y-4">
-            {node.journey.milestones.map((milestone, i) => (
-              <div key={i} className="flex gap-4 items-start" data-testid={`milestone-${i}`}>
-                <div className="w-16 text-right">
-                  <span className="text-xs font-mono text-primary font-bold">{(milestone as any).version || `v${i + 1}.0`}</span>
-                </div>
-                <div className="relative">
-                  <div className={`w-2 h-2 border ${categoryColors[milestone.category] || 'border-white/30'} bg-[#1a1c23] z-10 relative`} />
-                </div>
-                <div className="flex-1 pb-2">
-                  <Badge 
-                    variant="outline" 
-                    className={`rounded-none text-[9px] font-mono uppercase mb-1.5 ${categoryColors[milestone.category] || 'border-white/20 text-muted-foreground'}`}
-                  >
-                    {milestone.category.replace('_', ' ')}
-                  </Badge>
-                  <p className="text-xs text-foreground/70 leading-relaxed">{milestone.event}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SignalsTab({ node }: { node: NodeData }) {
-  return (
-    <div className="p-6 space-y-6">
-      {/* What Makes This Agent Special */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-           <Zap className="w-3 h-3" /> Differentiators
-        </h3>
-        <p className="text-[10px] text-muted-foreground/70 font-mono">
-          Key attributes that distinguish this agent from competitors
-        </p>
         <div className="space-y-2">
-          {node.journey.exceptionalTraits.map((trait, i) => (
-            <div 
-              key={i} 
-              className="flex items-start gap-3 p-3 bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-colors"
-              data-testid={`trait-${i}`}
-            >
-              <div className="w-5 h-5 flex items-center justify-center border border-primary/30 text-primary text-[10px] font-mono flex-shrink-0">
-                {i + 1}
-              </div>
-              <p className="text-xs text-foreground/80 leading-relaxed">{trait}</p>
+          {node.activityLog.slice(0, 4).map((entry, i) => (
+            <div key={entry.id} className="flex items-start gap-2 text-[10px]">
+              <span className="text-muted-foreground font-mono w-12 flex-shrink-0">{entry.timestamp}</span>
+              <span className="text-foreground/70">{entry.description}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <Separator className="bg-white/5" />
-
-      {/* Performance Signals */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-           <Database className="w-3 h-3" /> Performance Signals
-        </h3>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <SignalCard 
-            label="SOTA Status" 
-            value={node.exceptional ? 'YES' : 'NO'} 
-            active={node.exceptional}
-          />
-          <SignalCard 
-            label="Reliability" 
-            value={node.psychographic.leadershipPotential > 70 ? 'HIGH' : 'MED'} 
-            active={node.psychographic.leadershipPotential > 70}
-          />
-          <SignalCard 
-            label="Reasoning" 
-            value={node.psychographic.innovationScore > 85 ? 'HIGH' : 'MED'} 
-            active={node.psychographic.innovationScore > 85}
-          />
-          <SignalCard 
-            label="Versatility" 
-            value={node.psychographic.openness > 80 ? 'HIGH' : 'STD'} 
-            active={node.psychographic.openness > 80}
-          />
-        </div>
-      </div>
-
-      {node.exceptional && (
+      {/* Mayor Badge */}
+      {node.agentRole === 'mayor' && (
         <>
           <Separator className="bg-white/5" />
-          <div className="bg-secondary/10 border border-secondary/20 p-4">
+          <div className="bg-amber-500/10 border border-amber-500/20 p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4 text-secondary" />
-              <span className="text-xs font-mono text-secondary uppercase tracking-wider font-bold">Top-Tier Agent</span>
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span className="text-xs font-mono text-amber-500 uppercase tracking-wider font-bold">Primary Coordinator</span>
             </div>
             <p className="text-[11px] text-foreground/70 leading-relaxed">
-              This AI agent demonstrates state-of-the-art performance across multiple benchmarks. Recommended for complex, mission-critical applications.
+              {node.journey.narrative}
             </p>
           </div>
         </>
@@ -390,19 +307,154 @@ function SignalsTab({ node }: { node: NodeData }) {
   );
 }
 
-function SignalCard({ label, value, active }: { label: string; value: string; active: boolean }) {
+function BeadsTab({ node }: { node: NodeData }) {
+  const statusIcons = {
+    assigned: <Circle className="w-3 h-3 text-blue-400" />,
+    in_progress: <Play className="w-3 h-3 text-amber-400" />,
+    completed: <CheckCircle className="w-3 h-3 text-emerald-400" />,
+    blocked: <AlertCircle className="w-3 h-3 text-red-400" />,
+  };
+
+  const priorityColors = {
+    low: 'border-gray-500/30 text-gray-400',
+    medium: 'border-blue-500/30 text-blue-400',
+    high: 'border-amber-500/30 text-amber-400',
+    critical: 'border-red-500/30 text-red-400',
+  };
+
   return (
-    <div className={`p-3 border ${active ? 'border-primary/30 bg-primary/5' : 'border-white/5 bg-white/[0.02]'}`}>
-      <div className="text-[9px] text-muted-foreground uppercase font-mono mb-1">{label}</div>
-      <div className={`text-sm font-bold font-mono ${active ? 'text-primary' : 'text-foreground/50'}`}>{value}</div>
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+          <Package className="w-3 h-3" /> Assigned Beads
+        </h3>
+        <span className="text-[10px] font-mono text-muted-foreground">{node.beads.length} total</span>
+      </div>
+
+      {node.beads.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground text-sm">
+          No beads assigned
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {node.beads.map((bead, i) => (
+            <div 
+              key={bead.id}
+              className="p-3 bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors"
+            >
+              <div className="flex items-start gap-3">
+                {statusIcons[bead.status]}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-foreground leading-relaxed">{bead.title}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge 
+                      variant="outline" 
+                      className={`rounded-none text-[8px] uppercase ${priorityColors[bead.priority]}`}
+                    >
+                      {bead.priority}
+                    </Badge>
+                    <span className="text-[9px] text-muted-foreground uppercase">{bead.status.replace('_', ' ')}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function Shield() {
-   return (
-      <svg className="w-3 h-3 text-secondary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
-   )
+function MailboxTab({ node }: { node: NodeData }) {
+  const typeIcons: Record<string, React.ReactNode> = {
+    task_assignment: <Package className="w-3 h-3 text-blue-400" />,
+    handoff: <Users className="w-3 h-3 text-emerald-400" />,
+    status_check: <Clock className="w-3 h-3 text-amber-400" />,
+    priority_change: <AlertCircle className="w-3 h-3 text-red-400" />,
+    dependency: <GitBranch className="w-3 h-3 text-purple-400" />,
+    convoy_update: <Route className="w-3 h-3 text-cyan-400" />,
+  };
+
+  const unreadCount = node.mailbox.filter(m => !m.read).length;
+
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+          <Mail className="w-3 h-3" /> Messages
+        </h3>
+        {unreadCount > 0 && (
+          <Badge variant="outline" className="rounded-none text-[8px] border-primary/30 text-primary">
+            {unreadCount} unread
+          </Badge>
+        )}
+      </div>
+
+      {node.mailbox.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground text-sm">
+          Mailbox empty
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {node.mailbox.map((message, i) => (
+            <div 
+              key={message.id}
+              className={`p-3 border transition-colors ${message.read ? 'bg-white/[0.01] border-white/5' : 'bg-primary/5 border-primary/20'}`}
+            >
+              <div className="flex items-start gap-3">
+                {typeIcons[message.type] || <Mail className="w-3 h-3" />}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] font-mono text-primary">{message.from}</span>
+                    <span className="text-[9px] text-muted-foreground">{message.timestamp}</span>
+                    {!message.read && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                  </div>
+                  <p className="text-xs text-foreground/80 leading-relaxed">{message.content}</p>
+                  <Badge 
+                    variant="outline" 
+                    className="rounded-none text-[8px] uppercase mt-2 border-white/10 text-muted-foreground"
+                  >
+                    {message.type.replace('_', ' ')}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Handoff Info */}
+      <Separator className="bg-white/5" />
+      <div className="space-y-3">
+        <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-widest">
+          Handoff Chain
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white/[0.02] p-3 border border-white/5">
+            <div className="text-[9px] text-muted-foreground uppercase mb-1">Upstream</div>
+            <div className="text-xs font-mono text-foreground">
+              {node.upstreamAgentId || 'None'}
+            </div>
+          </div>
+          <div className="bg-white/[0.02] p-3 border border-white/5">
+            <div className="text-[9px] text-muted-foreground uppercase mb-1">Downstream</div>
+            <div className="text-xs font-mono text-foreground">
+              {node.downstreamAgentId || 'None'}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BeadStat({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="text-center">
+      <div className={`text-lg font-bold font-mono ${color}`}>{value}</div>
+      <div className="text-[8px] text-muted-foreground uppercase">{label}</div>
+    </div>
+  );
 }
 
 function TechBar({ label, value }: { label: string, value: number }) {
@@ -421,16 +473,5 @@ function TechBar({ label, value }: { label: string, value: number }) {
         ))}
       </div>
     </div>
-  );
-}
-
-function SocialBtn({ icon: Icon, label, href }: { icon: any, label: string, href: string }) {
-  return (
-    <Button variant="outline" className="w-full justify-start gap-2 border-white/10 hover:bg-primary/5 hover:border-primary/20 hover:text-primary rounded-none h-8 text-xs font-mono uppercase text-muted-foreground" asChild>
-      <a href={href} target="_blank" rel="noopener noreferrer">
-        <Icon className="w-3 h-3" />
-        {label}
-      </a>
-    </Button>
   );
 }
