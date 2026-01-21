@@ -286,11 +286,11 @@ export function CodePanel({ isOpen, onClose, nodes, onNodeSelect }: CodePanelPro
 
   return (
     <motion.div
-      initial={{ x: -500, opacity: 0 }}
+      initial={{ x: '-100%', opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      exit={{ x: -500, opacity: 0 }}
+      exit={{ x: '-100%', opacity: 0 }}
       transition={{ type: 'tween', ease: 'circOut', duration: 0.3 }}
-      className="fixed left-6 top-24 bottom-24 w-[480px] z-50 pointer-events-auto"
+      className="fixed left-0 top-20 bottom-0 right-24 z-50 pointer-events-auto"
       data-testid="code-panel"
     >
       <div className="h-full bg-[#1a1c23]/95 backdrop-blur-xl border border-white/10 text-foreground shadow-2xl overflow-hidden flex flex-col relative">
