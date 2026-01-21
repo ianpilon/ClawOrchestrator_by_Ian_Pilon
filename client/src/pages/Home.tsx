@@ -1,14 +1,14 @@
 import { useState, useMemo } from 'react';
 import { NetworkCanvas } from '@/components/NetworkCanvas';
 import { ProfileCard } from '@/components/ProfileCard';
-import { TwitterDropdown } from '@/components/TwitterDropdown';
+import { TerminalChat } from '@/components/TerminalChat';
 import { ActivityFeed } from '@/components/ActivityFeed';
 import { RigFilter } from '@/components/RigFilter';
 import { generateGraphData, NodeData } from '@/lib/mockData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AnimatePresence } from 'framer-motion';
-import { Crosshair, ShieldAlert, Target, Share2, Search, Globe } from 'lucide-react';
+import { Crosshair, ShieldAlert, Target, Share2, Search, Globe, Terminal } from 'lucide-react';
 import { VoiceAI } from '@/components/VoiceAI';
 
 // Generate data once (total ~27,500 nodes across all organizations)
@@ -18,7 +18,7 @@ export default function Home() {
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
   const [filter, setFilter] = useState<'all' | 'exceptional'>('all');
   const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [isTwitterOpen, setIsTwitterOpen] = useState(false);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [selectedRig, setSelectedRig] = useState<string | null>(null);
@@ -115,12 +115,13 @@ export default function Home() {
 
         <div className="pointer-events-auto flex gap-3 relative">
           <Button 
-            onClick={() => setIsTwitterOpen(!isTwitterOpen)}
-            className={`bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 hover:border-primary/50 font-mono uppercase rounded-none h-10 px-6 backdrop-blur-sm transition-all ${isTwitterOpen ? 'bg-primary/20 border-primary/50' : ''}`}
+            onClick={() => setIsTerminalOpen(!isTerminalOpen)}
+            className={`bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 hover:border-orange-500/50 font-mono uppercase rounded-none h-10 px-6 backdrop-blur-sm transition-all ${isTerminalOpen ? 'bg-orange-500/20 border-orange-500/50' : ''}`}
+            data-testid="open-terminal"
           >
-             <img src="/x-logo.png" alt="X" className="w-3 h-3 mr-2" /> Connect
+             <Terminal className="w-4 h-4 mr-2" /> Connect
           </Button>
-          <TwitterDropdown isOpen={isTwitterOpen} onClose={() => setIsTwitterOpen(false)} />
+          <TerminalChat isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
         </div>
       </div>
 
