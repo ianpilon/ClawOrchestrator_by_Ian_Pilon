@@ -69,33 +69,39 @@
 }
 
 .light {
-  --background: 210 20% 98%;
-  --foreground: 220 13% 25%;
+  /* Warm Beige/Cream Background - Tactical Industrial */
+  --background: 40 25% 92%; /* #ebe5db warm cream */
+  --foreground: 30 10% 15%; /* Dark charcoal for text */
 
-  --card: 0 0% 100%;
-  --card-foreground: 220 13% 20%;
+  --card: 40 20% 95%; /* Slightly lighter cream */
+  --card-foreground: 30 10% 12%;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 220 13% 20%;
+  --popover: 40 20% 95%;
+  --popover-foreground: 30 10% 12%;
 
-  --primary: 200 95% 40%;
+  /* Orange/Rust Primary - Like the reference */
+  --primary: 16 85% 50%; /* Rust orange #e65c1a */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 350 70% 55%;
-  --secondary-foreground: 0 0% 100%;
+  /* Darker charcoal secondary */
+  --secondary: 30 8% 25%;
+  --secondary-foreground: 40 25% 95%;
 
-  --muted: 210 20% 92%;
-  --muted-foreground: 218 10% 45%;
+  /* Warm muted tones */
+  --muted: 38 18% 86%;
+  --muted-foreground: 30 8% 40%;
 
-  --accent: 200 95% 45%;
+  /* Orange accent matching primary */
+  --accent: 16 85% 50%;
   --accent-foreground: 0 0% 100%;
 
-  --destructive: 350 60% 50%;
+  --destructive: 0 70% 50%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 210 15% 85%;
-  --input: 210 15% 90%;
-  --ring: 200 95% 45%;
+  /* Warm borders */
+  --border: 35 15% 80%;
+  --input: 38 18% 88%;
+  --ring: 16 85% 50%;
 
   --radius: 0px;
 }
@@ -116,9 +122,9 @@
   
   .light body {
     background-image: 
-      radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 60%),
-      linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+      radial-gradient(circle at 50% 50%, rgba(230, 92, 26, 0.03) 0%, transparent 60%),
+      linear-gradient(rgba(30, 25, 20, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 25, 20, 0.03) 1px, transparent 1px);
   }
 }
 
@@ -128,7 +134,7 @@
 }
 
 .light .hud-panel {
-  @apply bg-white/95 border-gray-200/80 shadow-md;
+  @apply bg-[#f5f0e8]/95 border-[#d4cfc5]/80 shadow-md;
 }
 
 .loop-canvas-bg {
@@ -136,14 +142,14 @@
 }
 
 .light .loop-canvas-bg {
-  background: radial-gradient(ellipse at center, rgba(245,247,250,1) 0%, rgba(230,235,242,1) 100%);
+  background: radial-gradient(ellipse at center, rgba(235,229,219,1) 0%, rgba(220,212,198,1) 100%);
 }
 
 .light .hud-corner-tl::before,
 .light .hud-corner-tr::after,
 .light .hud-corner-bl::before,
 .light .hud-corner-br::after {
-  border-color: hsl(var(--primary) / 0.4);
+  border-color: hsl(16 85% 50% / 0.5);
 }
 
 /* Corners are now simpler/cleaner */
@@ -258,7 +264,7 @@
 }
 
 .light .autonomous-badge {
-  @apply bg-emerald-500/15 border-emerald-600/40 text-emerald-600;
+  @apply bg-emerald-600/15 border-emerald-700/50 text-emerald-700;
 }
 
 /* Intervention indicator */
@@ -267,7 +273,7 @@
 }
 
 .light .intervention-badge {
-  @apply bg-amber-500/15 border-amber-600/40 text-amber-600;
+  @apply bg-orange-600/15 border-orange-700/50 text-orange-700;
 }
 
 /* Thread fork styling */
