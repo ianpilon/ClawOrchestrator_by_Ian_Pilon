@@ -388,32 +388,6 @@ export function LoopVisualization({
         })}
       </div>
 
-      <div className="absolute bottom-8 right-8 hud-panel p-4 pointer-events-auto" data-interactive>
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
-          Wheel Speed Distribution
-        </div>
-        <div className="flex gap-1 items-end h-12">
-          {[0, 20, 40, 60, 80, 100].map((threshold, i) => {
-            const count = loops.filter(l => 
-              l.wheelSpeed >= threshold && l.wheelSpeed < threshold + 20
-            ).length;
-            const height = Math.max(4, (count / loops.length) * 48);
-            
-            return (
-              <div
-                key={threshold}
-                className="w-4 bg-primary/50 rounded-t transition-all"
-                style={{ height }}
-                title={`${threshold}-${threshold + 20}: ${count} loops`}
-              />
-            );
-          })}
-        </div>
-        <div className="flex justify-between text-[8px] text-muted-foreground mt-1">
-          <span>0</span>
-          <span>100</span>
-        </div>
-      </div>
 
       <div className="absolute bottom-8 left-8 flex flex-col gap-2 pointer-events-auto" data-interactive>
         <button
