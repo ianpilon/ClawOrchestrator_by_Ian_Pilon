@@ -296,6 +296,15 @@ export function LoopStream({
                           <EmbeddedTerminal
                             loopId={item.loop.id}
                             loopName={item.loop.weaverName}
+                            loopContext={{
+                              loopId: item.loop.id,
+                              loopName: item.loop.weaverName,
+                              mode: item.loop.mode,
+                              goal: item.loop.goal,
+                              status: item.loop.status,
+                              iterationCount: item.loop.iterationCount,
+                              interventionReason: item.loop.interventionReason,
+                            }}
                             mode="inline"
                             maxHeight="120px"
                             showHeader={false}

@@ -247,6 +247,15 @@ export function InterventionPanel({
                                     <EmbeddedTerminal
                                       loopId={loop.id}
                                       loopName={loop.weaverName}
+                                      loopContext={{
+                                        loopId: loop.id,
+                                        loopName: loop.weaverName,
+                                        mode: loop.mode,
+                                        goal: loop.goal,
+                                        status: loop.status,
+                                        iterationCount: loop.iterationCount,
+                                        interventionReason: loop.interventionReason,
+                                      }}
                                       mode="full"
                                       maxHeight="200px"
                                       showHeader={true}

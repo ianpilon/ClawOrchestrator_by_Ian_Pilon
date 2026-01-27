@@ -328,6 +328,15 @@ export function ThreadInspector({
               <EmbeddedTerminal
                 loopId={loop.id}
                 loopName={loop.weaverName}
+                loopContext={{
+                  loopId: loop.id,
+                  loopName: loop.weaverName,
+                  mode: loop.mode,
+                  goal: loop.goal,
+                  status: loop.status,
+                  iterationCount: loop.iterationCount,
+                  interventionReason: loop.interventionReason,
+                }}
                 mode="full"
                 maxHeight="calc(100vh - 350px)"
                 showHeader={false}

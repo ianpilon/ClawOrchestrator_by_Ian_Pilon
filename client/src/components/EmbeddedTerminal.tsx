@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { useTerminalSession, TerminalLine } from '@/hooks/useTerminalSession';
-import { Terminal, ChevronRight, Loader2, X, Maximize2, Minimize2 } from 'lucide-react';
+import { useTerminalSession, TerminalLine, LoopContext } from '@/hooks/useTerminalSession';
+import { Terminal, ChevronRight, Loader2, X, Minimize2, Square } from 'lucide-react';
 
 interface EmbeddedTerminalProps {
   loopId?: string;
   loopName?: string;
+  loopContext?: LoopContext;
   mode?: 'full' | 'compact' | 'inline';
   initialLines?: TerminalLine[];
   onCommand?: (command: string) => Promise<string | void>;
@@ -17,6 +18,7 @@ interface EmbeddedTerminalProps {
 export function EmbeddedTerminal({
   loopId,
   loopName,
+  loopContext,
   mode = 'full',
   initialLines,
   onCommand,
@@ -34,9 +36,17 @@ export function EmbeddedTerminal({
     lines,
     isProcessing,
     executeCommand,
+    cancelRequest,
     navigateHistory,
     clearTerminal,
-  } = useTerminalSession({ loopId, onCommand, initialLines });
+    hasApiKey,
+  } = useTerminalSession({ 
+    loopId, 
+    loopName, 
+    loopContext,
+    onCommand, 
+    initialLines 
+  });
 
   useEffect(() => {
     if (outputRef.current) {
@@ -61,6 +71,8 @@ export function EmbeddedTerminal({
       e.preventDefault();
       const nextCommand = navigateHistory('down');
       setInput(nextCommand);
+    } else if (e.key === 'Escape' && isProcessing) {
+      cancelRequest();
     }
   };
 
@@ -74,6 +86,7 @@ export function EmbeddedTerminal({
       case 'output': return 'text-gray-300';
       case 'error': return 'text-red-400';
       case 'system': return 'text-amber-400';
+      case 'streaming': return 'text-gray-300';
       default: return 'text-gray-400';
     }
   };
@@ -82,8 +95,9 @@ export function EmbeddedTerminal({
     switch (type) {
       case 'input': return '$ ';
       case 'output': return '';
-      case 'error': return 'ERROR: ';
+      case 'error': return '✗ ';
       case 'system': return '> ';
+      case 'streaming': return '';
       default: return '';
     }
   };
@@ -117,11 +131,26 @@ export function EmbeddedTerminal({
             <span className="text-xs font-mono text-muted-foreground">
               {loopName || loopId || 'claude-code'}
             </span>
+            {!hasApiKey && (
+              <span className="text-[9px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                No API key
+              </span>
+            )}
             {isProcessing && (
               <Loader2 className="w-3 h-3 text-emerald-400 animate-spin" />
             )}
           </div>
           <div className="flex items-center gap-1">
+            {isProcessing && (
+              <button
+                onClick={(e) => { e.stopPropagation(); cancelRequest(); }}
+                className="p-1 hover:bg-red-500/10 rounded text-red-400"
+                title="Cancel request (Esc)"
+                data-testid={`terminal-cancel-${loopId || 'global'}`}
+              >
+                <Square className="w-3 h-3" />
+              </button>
+            )}
             {mode === 'compact' && (
               <button
                 onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}
@@ -151,7 +180,9 @@ export function EmbeddedTerminal({
       >
         {lines.length === 0 && (
           <div className="text-muted-foreground/50 italic">
-            Type 'help' for available commands...
+            {hasApiKey 
+              ? "Type 'help' for commands or ask Claude anything..."
+              : "No API key configured. Add one in Settings to chat with Claude."}
           </div>
         )}
         {lines.map((line) => (
@@ -161,14 +192,11 @@ export function EmbeddedTerminal({
           >
             <span className="opacity-60">{getLinePrefix(line.type)}</span>
             {line.content}
+            {line.type === 'streaming' && (
+              <span className="terminal-cursor" />
+            )}
           </div>
         ))}
-        {isProcessing && (
-          <div className="text-emerald-400/50 flex items-center gap-2">
-            <Loader2 className="w-3 h-3 animate-spin" />
-            <span>Processing...</span>
-          </div>
-        )}
       </div>
 
       <div className="terminal-input-container flex items-center gap-2 px-3 py-2 border-t border-white/5">
@@ -180,7 +208,7 @@ export function EmbeddedTerminal({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isProcessing}
-          placeholder={isProcessing ? 'Processing...' : 'Enter command...'}
+          placeholder={isProcessing ? 'Processing... (Esc to cancel)' : 'Ask Claude or enter command...'}
           className="terminal-input flex-1 bg-transparent border-none outline-none text-xs font-mono text-gray-200 placeholder:text-muted-foreground/30"
           autoComplete="off"
           spellCheck={false}

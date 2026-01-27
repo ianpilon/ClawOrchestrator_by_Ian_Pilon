@@ -6,6 +6,7 @@ import { InterventionPanel } from '@/components/InterventionPanel';
 import { ThreadInspector } from '@/components/ThreadInspector';
 import { RefinementHistory } from '@/components/RefinementHistory';
 import { SafeguardDashboard } from '@/components/SafeguardDashboard';
+import { SettingsPanel } from '@/components/SettingsPanel';
 import { 
   generateLoomData, 
   LoomData, 
@@ -18,7 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { AnimatePresence } from 'framer-motion';
 import { 
   RefreshCw, Globe, Layers, Shield, 
-  Play, Pause, AlertTriangle, Zap
+  Play, Pause, AlertTriangle, Zap, Settings
 } from 'lucide-react';
 
 const loomData = generateLoomData();
@@ -28,6 +29,7 @@ export default function Home() {
   const [selectedLoop, setSelectedLoop] = useState<RalphLoop | null>(null);
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null);
   const [filter, setFilter] = useState<'all' | 'interventions' | 'spinning'>('all');
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const spinningCount = useMemo(() => 
     data.loops.filter(l => l.status === 'spinning').length, 
@@ -183,6 +185,16 @@ export default function Home() {
               </Button>
             ))}
           </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSettingsOpen(true)}
+            className="hud-panel h-9 w-9 p-0"
+            data-testid="open-settings"
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
         </div>
       </div>
 
@@ -244,6 +256,11 @@ export default function Home() {
           />
         )}
       </AnimatePresence>
+
+      <SettingsPanel 
+        isOpen={settingsOpen} 
+        onClose={() => setSettingsOpen(false)} 
+      />
     </div>
   );
 }
