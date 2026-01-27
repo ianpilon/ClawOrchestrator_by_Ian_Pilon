@@ -86,7 +86,7 @@ export function RefinementHistory({ loops, onRunAnotherLoop }: RefinementHistory
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 max-h-[50vh] overflow-y-auto">
               <div className="space-y-3 mb-4">
                 {(['raw', 'shaped', 'refined', 'polished'] as RefinementLevel[]).map((level) => {
                   const texture = clayTextures[level];

@@ -230,7 +230,7 @@ export default function Home() {
         />
       </div>
 
-      <div className="absolute bottom-32 left-6 z-10 pointer-events-auto">
+      <div className="absolute bottom-8 left-6 z-10 pointer-events-auto">
         <RefinementHistory 
           loops={data.loops}
           onRunAnotherLoop={handleRunAnotherLoop}
