@@ -68,12 +68,11 @@ export function AgentInspector({
               {agent.domain}
             </Badge>
             <Badge 
-              variant="outline" 
-              className={`text-xs ${
-                agent.status === 'active' ? 'border-emerald-500 text-emerald-500' :
-                agent.status === 'idle' ? 'border-gray-500 text-gray-500' :
-                agent.status === 'intervention_required' ? 'border-amber-500 text-amber-500' :
-                'border-gray-600 text-gray-600'
+              className={`text-xs font-medium ${
+                agent.status === 'active' ? 'bg-emerald-600 text-white' :
+                agent.status === 'idle' ? 'bg-gray-600 text-white' :
+                agent.status === 'intervention_required' ? 'bg-amber-600 text-white' :
+                'bg-gray-700 text-white'
               }`}
             >
               {agent.status.replace('_', ' ')}

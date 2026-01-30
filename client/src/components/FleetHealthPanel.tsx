@@ -62,7 +62,7 @@ export function FleetHealthPanel({ fleetHealth, machines }: FleetHealthPanelProp
             <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
             <span className="text-xs text-muted-foreground">Interventions</span>
           </div>
-          <span className={`text-sm font-mono ${fleetHealth.interventionsRequired > 0 ? 'text-amber-500' : 'text-foreground'}`}>
+          <span className={`text-sm font-mono font-medium ${fleetHealth.interventionsRequired > 0 ? 'text-foreground' : 'text-foreground'}`}>
             {fleetHealth.interventionsRequired}
           </span>
         </div>

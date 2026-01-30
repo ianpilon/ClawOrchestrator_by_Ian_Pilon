@@ -71,7 +71,7 @@ export function AgentInterventionPanel({
             </h3>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-mono">
+            <span className="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-mono font-medium">
               {pendingInterventions.length}
             </span>
             <Button
@@ -123,10 +123,10 @@ export function AgentInterventionPanel({
                         {intervention.timestamp}
                       </div>
                     </div>
-                    <div className={`text-[10px] uppercase px-2 py-0.5 rounded font-medium ${
-                      intervention.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
-                      intervention.priority === 'high' ? 'bg-amber-500/20 text-amber-400' :
-                      'bg-blue-500/20 text-blue-400'
+                    <div className={`text-[10px] uppercase px-2 py-0.5 rounded font-semibold ${
+                      intervention.priority === 'urgent' ? 'bg-red-600 text-white' :
+                      intervention.priority === 'high' ? 'bg-amber-600 text-white' :
+                      'bg-blue-600 text-white'
                     }`}>
                       {intervention.priority}
                     </div>

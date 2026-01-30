@@ -36,7 +36,7 @@ export function SwarmDashboard({ swarms, agents }: SwarmDashboardProps) {
             Active Swarms
           </h3>
         </div>
-        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded font-mono">
+        <span className="text-xs bg-purple-600 text-white px-2 py-0.5 rounded font-mono font-medium">
           {activeSwarms.length}
         </span>
       </div>
@@ -99,7 +99,7 @@ export function SwarmDashboard({ swarms, agents }: SwarmDashboardProps) {
                   <span className="text-xs text-muted-foreground">
                     {swarm.tasksCompleted}/{swarm.tasksTotal} tasks
                   </span>
-                  <span className="text-xs font-mono text-purple-400">{swarm.progress}%</span>
+                  <span className="text-xs font-mono text-foreground">{swarm.progress}%</span>
                 </div>
                 <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <motion.div

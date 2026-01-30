@@ -158,7 +158,7 @@ export function ActionTimeline({
                       </div>
 
                       {action.requiresApproval && (
-                        <div className="mt-1.5 px-2 py-1 bg-amber-500/20 rounded text-[11px] text-amber-400 inline-block">
+                        <div className="mt-1.5 px-2 py-1 bg-amber-600 rounded text-[11px] text-white font-medium inline-block">
                           Needs Approval
                         </div>
                       )}
