@@ -213,7 +213,7 @@ export function AgentVisualization({
                   x={dimensions.width / 2 + orbit + 15}
                   y={dimensions.height / 2 - 5}
                   fill={`${domainColors[domain]}66`}
-                  fontSize="9"
+                  fontSize="11"
                   fontFamily="monospace"
                 >
                   {domainLabels[domain]}
@@ -290,7 +290,7 @@ export function AgentVisualization({
                 <div className="text-xl font-bold text-red-500 font-mono">
                   {agents.filter(a => a.status === 'active').length}
                 </div>
-                <div className="text-[7px] uppercase tracking-wider text-muted-foreground">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                   ACTIVE
                 </div>
               </div>
@@ -360,7 +360,7 @@ export function AgentVisualization({
                   />
                   
                   <div 
-                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded text-[6px] font-mono uppercase tracking-wider whitespace-nowrap"
+                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded text-[9px] font-mono uppercase tracking-wider whitespace-nowrap"
                     style={{ 
                       background: `${domainColors[pos.agent.domain]}cc`,
                       color: 'white',
@@ -372,7 +372,7 @@ export function AgentVisualization({
 
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-0.5">
                     {pos.agent.integrations.slice(0, 3).map((int, i) => (
-                      <span key={i} className="text-[8px]" title={int}>
+                      <span key={i} className="text-xs" title={int}>
                         {integrationIcons[int]}
                       </span>
                     ))}
@@ -381,11 +381,11 @@ export function AgentVisualization({
 
                 {isCollaborating && (
                   <motion.div 
-                    className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-purple-500 flex items-center justify-center z-20"
+                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center z-20"
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 0.8, repeat: Infinity }}
                   >
-                    <span className="text-[6px] font-bold text-white">S</span>
+                    <span className="text-[9px] font-bold text-white">S</span>
                   </motion.div>
                 )}
 
@@ -398,7 +398,7 @@ export function AgentVisualization({
                     }}
                     transition={{ duration: 0.4, repeat: Infinity }}
                   >
-                    <span className="text-[9px] font-bold text-black">!</span>
+                    <span className="text-xs font-bold text-black">!</span>
                   </motion.div>
                 )}
               </motion.div>
@@ -415,13 +415,13 @@ export function AgentVisualization({
           return (
             <div key={domain} className="text-center">
               <div 
-                className="w-2.5 h-2.5 rounded-full mx-auto mb-1"
+                className="w-3 h-3 rounded-full mx-auto mb-1"
                 style={{ background: domainColors[domain] }}
               />
-              <div className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground">
+              <div className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
                 {domain.slice(0, 5)}
               </div>
-              <div className="text-xs font-bold text-foreground">
+              <div className="text-sm font-bold text-foreground">
                 {active}/{domainAgents.length}
               </div>
             </div>
@@ -454,7 +454,7 @@ export function AgentVisualization({
         >
           <Maximize2 className="w-4 h-4 text-muted-foreground" />
         </button>
-        <div className="hud-panel px-2 py-1 text-[10px] text-muted-foreground font-mono text-center" data-testid="zoom-level">
+        <div className="hud-panel px-2 py-1 text-xs text-muted-foreground font-mono text-center" data-testid="zoom-level">
           {Math.round(zoom * 100)}%
         </div>
       </div>

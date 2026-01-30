@@ -43,7 +43,7 @@ export function AgentInterventionPanel({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center text-[10px] font-bold text-black"
+            className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold text-black"
           >
             {pendingInterventions.length}
           </motion.span>
@@ -60,18 +60,18 @@ export function AgentInterventionPanel({
     <motion.div
       initial={{ x: 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="absolute right-6 top-40 w-72 z-20 pointer-events-auto"
+      className="absolute right-6 top-40 w-80 z-20 pointer-events-auto"
     >
       <div className="hud-panel hud-corner-br">
         <div className="p-3 border-b border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
-            <h3 className="text-[10px] font-bold uppercase tracking-wider text-foreground">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
               Interventions
             </h3>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-mono">
+            <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-mono">
               {pendingInterventions.length}
             </span>
             <Button
@@ -104,26 +104,26 @@ export function AgentInterventionPanel({
                     <img 
                       src={clawAgentImg} 
                       alt={intervention.agentName}
-                      className="w-7 h-7 object-contain cursor-pointer"
+                      className="w-8 h-8 object-contain cursor-pointer"
                       onClick={() => agent && onAgentSelect(agent)}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-medium text-foreground">
+                        <span className="text-sm font-medium text-foreground">
                           {intervention.agentName}
                         </span>
                         {agent && (
                           <span 
-                            className="w-1.5 h-1.5 rounded-full"
+                            className="w-2 h-2 rounded-full"
                             style={{ background: domainColors[agent.domain] }}
                           />
                         )}
                       </div>
-                      <div className="text-[8px] text-muted-foreground">
+                      <div className="text-xs text-muted-foreground">
                         {intervention.timestamp}
                       </div>
                     </div>
-                    <div className={`text-[7px] uppercase px-1.5 py-0.5 rounded ${
+                    <div className={`text-[10px] uppercase px-2 py-0.5 rounded font-medium ${
                       intervention.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
                       intervention.priority === 'high' ? 'bg-amber-500/20 text-amber-400' :
                       'bg-blue-500/20 text-blue-400'
@@ -132,39 +132,39 @@ export function AgentInterventionPanel({
                     </div>
                   </div>
 
-                  <div className="text-[11px] text-foreground mb-2">
+                  <div className="text-sm text-foreground mb-2">
                     {intervention.question}
                   </div>
 
-                  <div className="text-[9px] text-muted-foreground mb-3 truncate">
+                  <div className="text-xs text-muted-foreground mb-3 truncate">
                     {intervention.context}
                   </div>
 
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      className="flex-1 h-7 text-[10px] bg-emerald-600 hover:bg-emerald-500"
+                      className="flex-1 h-8 text-xs bg-emerald-600 hover:bg-emerald-500"
                       onClick={() => onResolve(intervention.agentId, 'approve')}
                     >
-                      <Check className="w-3 h-3 mr-1" />
+                      <Check className="w-3.5 h-3.5 mr-1" />
                       Approve
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 h-7 text-[10px] border-red-500/50 text-red-400 hover:bg-red-500/10"
+                      className="flex-1 h-8 text-xs border-red-500/50 text-red-400 hover:bg-red-500/10"
                       onClick={() => onResolve(intervention.agentId, 'deny')}
                     >
-                      <X className="w-3 h-3 mr-1" />
+                      <X className="w-3.5 h-3.5 mr-1" />
                       Deny
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-7 px-2 text-[10px]"
+                      className="h-8 px-2 text-xs"
                       onClick={() => onResolve(intervention.agentId, 'later')}
                     >
-                      <Clock className="w-3 h-3" />
+                      <Clock className="w-3.5 h-3.5" />
                     </Button>
                   </div>
                 </motion.div>
