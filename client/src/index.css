@@ -206,7 +206,7 @@
   @apply w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary))] animate-pulse;
 }
 
-/* Loom Paradigm - Loop Animations */
+/* Claw Orchestrator Paradigm - Loop Animations */
 @keyframes loop-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

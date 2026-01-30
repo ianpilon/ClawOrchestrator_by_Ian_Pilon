@@ -1,10 +1,10 @@
-# Loom - Agents-First Infrastructure Orchestrator
+# Claw Orchestrator - Agents-First Infrastructure Orchestrator
 
 ## Overview
 
-Loom is an infrastructure orchestration visualization platform designed around the "agents-first, humans-second" paradigm. It displays Ralph loops (recursive AI coding agent loops) as animated spinning cycles, with human intervention surfaces that only appear when agents encounter failure domains requiring guidance.
+Claw Orchestrator is an infrastructure orchestration visualization platform designed around the "agents-first, humans-second" paradigm. It displays Ralph loops (recursive AI coding agent loops) as animated spinning cycles, with human intervention surfaces that only appear when agents encounter failure domains requiring guidance.
 
-The system implements the Loom philosophy where:
+The system implements the Claw Orchestrator philosophy where:
 - **Ralph Loops** are the primary focus: Forward mode (building), Reverse mode (cloning), System mode (testing)
 - **Threads** are audit trails of everything agents do, shareable and loadable as context
 - **Weavers** are the agents themselves, running with full isolation
@@ -18,7 +18,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (January 2026)
 
-- **Complete UI Paradigm Shift**: Transformed from network-graph talent visualization to Loom agents-first infrastructure
+- **Complete UI Paradigm Shift**: Transformed from network-graph talent visualization to Claw Orchestrator agents-first infrastructure
 - **Embedded Terminal System**: Claude Code terminal integration across intervention points
   - `EmbeddedTerminal` - Reusable terminal component with full/compact/inline modes
   - `useTerminalSession` - Hook for managing terminal state, command history, simulated responses
@@ -84,9 +84,9 @@ Preferred communication style: Simple, everyday language.
 │   │   ├── SafeguardDashboard.tsx
 │   │   └── ui/              # shadcn/ui primitives
 │   ├── pages/
-│   │   └── Home.tsx         # Main Loom dashboard
+│   │   └── Home.tsx         # Main Claw Orchestrator dashboard
 │   ├── lib/
-│   │   ├── loomData.ts      # Loom data models and mock generation
+│   │   ├── loomData.ts      # Claw Orchestrator data models and mock generation
 │   │   └── mockData.ts      # Legacy data (can be removed)
 │   └── hooks/
 ├── server/

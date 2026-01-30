@@ -1,4 +1,4 @@
-// Loom: Infrastructure Orchestrator for Ralph Loops
+// Claw Orchestrator: Infrastructure Orchestrator for Ralph Loops
 // Agents-first, humans-second paradigm
 
 export type LoopMode = 'forward' | 'reverse' | 'system';
@@ -124,7 +124,7 @@ export interface SystemHealth {
   safeguardsTriggered: number;
 }
 
-// Color system for Loom
+// Color system for Claw Orchestrator
 export const loopModeColors: Record<LoopMode, string> = {
   forward: '#22c55e', // Green - building
   reverse: '#8b5cf6', // Purple - cloning/analyzing
@@ -163,7 +163,7 @@ const weaverAvatars = [
 ];
 
 const weaverNames = [
-  'Loom-Alpha', 'Loom-Beta', 'Loom-Gamma', 'Loom-Delta', 'Loom-Epsilon',
+  'Claw-Alpha', 'Claw-Beta', 'Claw-Gamma', 'Claw-Delta', 'Claw-Epsilon',
   'Thread-Prime', 'Thread-Nova', 'Thread-Apex', 'Thread-Core', 'Thread-Flux',
   'Weave-One', 'Weave-Two', 'Weave-Three', 'Weave-Four', 'Weave-Five',
 ];

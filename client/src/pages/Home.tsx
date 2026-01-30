@@ -134,7 +134,7 @@ export default function Home() {
             <div className="h-px bg-white/5 w-full mb-3" />
             <h1 className="text-2xl font-bold uppercase tracking-wider text-foreground flex items-center gap-3">
               <Layers className="h-6 w-6 text-primary" />
-              Loom <span className="text-white/20">V.01</span>
+              Claw Orchestrator <span className="text-white/20">V.01</span>
             </h1>
             <p className="hud-text mt-1">
               Mode: <span className="text-secondary">Ralph Loops</span> // Status: <span className="text-primary">Weaving</span>

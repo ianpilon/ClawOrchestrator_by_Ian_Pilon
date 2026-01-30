@@ -59,7 +59,7 @@ export async function registerRoutes(
     try {
       const client = new Anthropic({ apiKey });
 
-      const systemPrompt = `You are Claude Code, an AI coding assistant integrated into the Loom infrastructure orchestration platform. You help developers understand and debug their Ralph loops (recursive AI coding agent loops).
+      const systemPrompt = `You are Claude Code, an AI coding assistant integrated into the Claw Orchestrator infrastructure orchestration platform. You help developers understand and debug their Ralph loops (recursive AI coding agent loops).
 
 Current context:
 ${loopContext ? `- Loop: ${loopContext.loopName}

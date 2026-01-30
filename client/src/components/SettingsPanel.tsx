@@ -242,7 +242,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     Model Configuration
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
-                    Loom uses <span className="text-primary font-mono">claude-sonnet-4-20250514</span> for 
+                    Claw Orchestrator uses <span className="text-primary font-mono">claude-sonnet-4-20250514</span> for 
                     optimal balance of speed and capability.
                   </p>
                 </div>

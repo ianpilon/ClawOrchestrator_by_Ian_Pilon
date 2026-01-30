@@ -107,7 +107,7 @@ export function useTerminalSession(options: UseTerminalSessionOptions = {}) {
     }
 
     if (trimmedCommand.toLowerCase() === 'help') {
-      addLine('system', `Loom Terminal - Claude Code Interface
+      addLine('system', `Claw Orchestrator Terminal - Claude Code Interface
 
 Commands:
   help     - Show this help message
